@@ -13,7 +13,7 @@ const advertiserSchema = mongoose.Schema(
     companyName: { type: String, required: true },
     companyPosition: { type: String, required: true },
     companyWebsite: { type: String, required: false },
-    companyTelephone: { type: String, required: true },
+    companyTelephone: { type: String, required: true }, // Company telephone
   },
   {
     timestamps: true, // Automatically adds createdAt and updatedAt
