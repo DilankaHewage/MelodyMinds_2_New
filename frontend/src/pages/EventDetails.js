@@ -21,10 +21,10 @@ const EventDetails = () => {
     'I’ve already got my tickets!',
   ]); // Initialize with 5 pre-existing comments
   const [newComment, setNewComment] = useState('');
-  const [showComments, setShowComments] = useState(false);
+  const [showComments, setShowComments] = useState(false);// State to toggle comment section visibility
 
   const [errorMessage, setErrorMessage] = useState(''); // State to store error message
-  const isLoggedIn = !!localStorage.getItem('userToken'); // Check if the user is logged in
+  const isLoggedIn = !!localStorage.getItem('userToken' ); // Check if the user is logged in
 
   const handleReaction = () => {
     if (!isLoggedIn) {
@@ -89,12 +89,14 @@ const EventDetails = () => {
         </div>
       )}
 
+  
+
       {/* Centered Event Title */}
       <div className="event-title-container">
         <h1 className="event-title">{event.title}</h1>
       </div>
 
-      <div className="event-content">
+      <div className="event-content"> 
         {/* Left Section */}
         <div className="event-left">
           <div className="event-image">
