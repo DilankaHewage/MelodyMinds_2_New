@@ -19,7 +19,7 @@ function HelpPage() {
   return (
     <div className="help-container">
       <h1>Help & Support</h1>
-      <p>Welcome to the Melody Minds Help Center. Here’s how you can make the most of our platform:</p>
+      <p>Welcome to the Melody Minds Help Center. Here’s how you can make the most of our platform:</p> // a brief introduction
 
       <section className="help-section">
         <h2>🎟 How to Book Tickets</h2>
@@ -35,7 +35,7 @@ function HelpPage() {
         <ul>
           <li>Log in as an <strong>Advertiser</strong>.</li>
           <li>Click on <strong>"Create Event"</strong> from your dashboard.</li>
-          <li>Fill in event details and publish it.</li>
+          <li>Fill in event details and publish it.</li> 
         </ul>
       </section>
 
