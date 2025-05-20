@@ -18,4 +18,4 @@ router.get("/:id", getEventById);
 // Route to create an event with poster upload
 router.post("/", upload.single("poster"), createEvent);
 
-export default router;
+export default router; // event.route.js 
