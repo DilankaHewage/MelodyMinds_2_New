@@ -11,7 +11,7 @@ const advertiserSchema = mongoose.Schema(
     telephone: { type: String, required: true },
     nicNumber: { type: String, required: true },
     companyName: { type: String, required: true },
-    companyPosition: { type: String, required: true },
+    companyPosition: { type: String, required: true }, // Position in the company 
     companyWebsite: { type: String, required: false },
     companyTelephone: { type: String, required: true }, // Company telephone
   },
