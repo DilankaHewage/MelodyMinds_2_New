@@ -38,7 +38,7 @@ advertiserSchema.pre('save', async function (next) {
 
 // Match entered password with the hashed password
 advertiserSchema.methods.matchPassword = async function (enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.password);
+  return await bcrypt.compare(enteredPassword, this.password); 
 };
 
 const Advertiser = mongoose.model('Advertiser', advertiserSchema);
