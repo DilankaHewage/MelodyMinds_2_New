@@ -37,9 +37,9 @@ userSchema.pre('save', async function (next) {
 userSchema.methods.matchPassword = async function (enteredPassword) {
   console.log('Entered Password:', enteredPassword); // Debug: Log the entered password
   console.log('Stored Hashed Password:', this.password); // Debug: Log the stored hashed password
-  return await bcrypt.compare(enteredPassword, this.password);
+  return await bcrypt.compare(enteredPassword, this.password); 
 };
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema); // Create the User model
 
 export default User;
