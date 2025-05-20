@@ -10,7 +10,7 @@ const UserDashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedDistricts, setSelectedDistricts] = useState([]);
-  const [isDistrictListVisible, setIsDistrictListVisible] = useState(false);
+  const [isDistrictListVisible, setIsDistrictListVisible] = useState(false); 
 
   const districts = [
     'Colombo', 'Gampaha', 'Kalutara', 'Kandy', 'Matale',
@@ -43,7 +43,7 @@ const UserDashboard = () => {
           const { data } = await axios.get('http://localhost:5000/api/users/profile', config); // Fetch user profile
           setUserName(data.name); // Set the user's name
         } catch (error) {
-          console.error('Error fetching user profile:', error);
+          console.error('Error fetching user profile:', error); // Handle error
         }
       }
     };
