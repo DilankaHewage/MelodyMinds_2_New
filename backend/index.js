@@ -19,6 +19,7 @@ app.use(express.json());
 app.use(cors({
   origin: 'http://localhost:3000', // Change this if your frontend is hosted elsewhere
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  
   allowedHeaders: ['Content-Type', 'Authorization'], // Allow specific headers
 }));
 
@@ -30,7 +31,7 @@ app.use('/api/events', eventRoutes);
 const connectDB = async () => {
   try {
     const conn = await mongoose.connect(process.env.MONGO_URI); // Updated to omit deprecated options
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
+    console.log(`MongoDB Connected: ${conn.connection.host}`); // Log the connection host
   } catch (error) {
     console.error(`Error: ${error.message}`); // Log the error message
     process.exit(1);
