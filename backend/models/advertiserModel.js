@@ -44,3 +44,4 @@ advertiserSchema.methods.matchPassword = async function (enteredPassword) {
 const Advertiser = mongoose.model('Advertiser', advertiserSchema);
 
 export default Advertiser;
+// Advertiser model 
