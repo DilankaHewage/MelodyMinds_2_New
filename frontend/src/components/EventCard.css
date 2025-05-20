@@ -1,0 +1,236 @@
+/* EventCard.css */
+.event-card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.event-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px;
+    width: 250px;
+    height: 480px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    line-height: 1.2;
+  }
+
+  .event-card:hover {
+    transform: scale(1.02); /* Slight zoom effect on hover */
+  }
+  
+  .event-poster {
+    width: 100%;
+    height: 300px; 
+    object-fit: cover;
+    border-radius: 10px;
+  }
+  
+  .event-details {
+    padding: 10px 0;
+    text-align: left;
+  }
+  
+  .event-details h2 {
+    font-size: 22px;
+    margin: 10px 0;
+  }
+  
+  .event-details p {
+    margin: 15px 0 !important ;
+    font-size: 14px;
+    line-height: 1.2;
+  }
+  
+ 
+  .event-actions {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  
+  .favorite-button {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Add spacing between the icon and the count */
+    background-color: transparent;
+    color:  #6d6161;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+  }
+  
+  
+.favorite-button.liked {
+  color: rgb(218, 74, 206); /* Purple color for liked state */
+}
+  
+  .the-favorite-button i {
+    font-size: 20px;
+    margin-right: 5px;
+    padding: 4px 8px; 
+    transition: color 0.3s ease;
+  }
+  
+  .favorite-button span {
+    font-size: 14px !important; /* Adjust count size */
+    color: #524f4f;
+  }
+  
+  
+  .favorite-button span,
+  .comment-button span {
+    font-size: 20px; /* Ensure both have the same font size */
+  }
+  
+  
+  .comment-button{
+    background: none;
+    padding: 4px 10px;
+  border: none;
+  cursor: pointer;
+  gap : 5px; /* Space between the icon and text inside the button */
+  color: #6d6161; 
+  margin-right: 10px;
+  transition: color 0.3s ease;
+  }
+
+ 
+  .comment-bar {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+  }
+  
+  .comment-input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-right: 10px;
+  }
+  .comment-button i {
+    font-size: 20px; /* Increased font size for the comment icon */
+    transition: transform 0.3s ease; /* Optional: Add a smooth transition effect */
+  }
+
+  .comment-button span {
+    font-size: 14px; /* Adjust count size */
+    color: #524f4f;
+  }
+
+  .the-post-button {
+    padding: 8px 12px;
+    background-color: #8731bd;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .the-post-button:hover {
+    background-color:#6a1b9a;
+  }
+
+  .error-message {
+    color: red;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+  }
+
+  .error-dialog {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 10px 20px;
+    border: 1px solid #f5c6cb;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    font-size: 1rem;
+    text-align: center;
+  }
+
+  .delete-icon-container {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: auto; /* Align to the left */
+  }
+  
+  
+  
+  .delete-icon:hover {
+    color:#c23bb2;
+  }
+  
+  .right-actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+
+/* Remove hover effect for the comment button in AdvertiserEventCard */
+.advertiser-event-card .comment-button:hover {
+  color: inherit; /* Keep the default color */
+  background-color: transparent; /* Ensure no background change */
+  transform: none; /* Disable any scaling or animation */
+}
+
+/* Comments Dialog */
+.comments-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(238, 193, 240, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.comments-dialog-content {
+  background-color: rgb(255, 255, 255);
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.comments-list {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.comment-item {
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: #333;
+}
+
+.close-dialog-button {
+  background-color: #a74ab7;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.close-dialog-button:hover {
+  background-color: #512161;
+}

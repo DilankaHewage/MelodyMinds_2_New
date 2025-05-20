@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Frontend</title>
+</head>
+<body>
+  <h1>Simple Frontend</h1>
+
+  <!-- Login Form -->
+  <h2>Login</h2>
+  <form id="loginForm">
+    <label for="email">Email:</label>
+    <input type="email" id="email" required><br><br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" required><br><br>
+    <button type="submit">Login</button>
+  </form>
+
+  <hr>
+
+  <!-- Create Event Form -->
+  <h2>Create Event</h2>
+  <form id="eventForm">
+    <label for="eventName">Event Name:</label>
+    <input type="text" id="eventName" required><br><br>
+    <label for="eventDate">Event Date:</label>
+    <input type="date" id="eventDate" required><br><br>
+    <label for="eventLocation">Event Location:</label>
+    <input type="text" id="eventLocation" required><br><br>
+    <button type="submit">Create Event</button>
+  </form>
+
+  <script>
+    // Backend URL (replace with your backend's actual URL)
+    const BACKEND_URL = 'http://localhost:5000/api';
+
+    // Handle Login
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const response = await fetch(`${BACKEND_URL}/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          localStorage.setItem('authToken', data.token); // Save the token
+          alert('Login successful!');
+        } else {
+          alert('Login failed. Please check your credentials.');
+        }
+      } catch (error) {
+        console.error('Error during login:', error);
+        alert('An error occurred. Please try again.');
+      }
+    });
+
+    // Handle Create Event
+    document.getElementById('eventForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const token = localStorage.getItem('authToken'); // Get the saved token
+
+      if (!token) {
+        alert('You need to log in first!');
+        return;
+      }
+
+      const name = document.getElementById('eventName').value;
+      const date = document.getElementById('eventDate').value;
+      const location = document.getElementById('eventLocation').value;
+
+      try {
+        const response = await fetch(`${BACKEND_URL}/events`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`, // Send token in the header
+          },
+          body: JSON.stringify({ name, date, location }),
+        });
+
+        if (response.ok) {
+          alert('Event created successfully!');
+        } else {
+          alert('Failed to create event. You may not be authorized.');
+        }
+      } catch (error) {
+        console.error('Error during event creation:', error);
+        alert('An error occurred. Please try again.');
+      }
+    });
+  </script>
+</body>
+</html>

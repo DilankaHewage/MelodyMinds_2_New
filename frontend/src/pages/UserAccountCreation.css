@@ -1,0 +1,57 @@
+/* Container for the user account creation page */
+.user-account-creation-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: url('/public/images/login page 1.jpg') no-repeat center center/cover; /* Background image */
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Box for the form */
+.user-account-box {
+  background: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
+  padding: 40px;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+
+.create-account-button {
+  background: #6a1b9a;
+  color: #ffffff;
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: 20px;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.create-account-button:hover {
+  background: #8e24aa;
+}
+
+.dialog-box {
+  position: fixed;
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #f8d7da;
+    color: #721c24;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  z-index: 1000;
+}
+
+.dialog-box p {
+  font-size: 1rem;
+  color: #333;
+}

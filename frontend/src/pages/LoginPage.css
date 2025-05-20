@@ -1,0 +1,100 @@
+/* Styles for the LoginPage */
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f3f4f6;
+  margin: 0;
+  padding: 0;
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: url('/public/images/user_login.jpg') no-repeat center center/cover;  /* Background image */
+}
+
+.login-box {
+  background: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
+  padding: 40px;
+  width: 300px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.login-box h2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #3c1361;
+}
+
+.input-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.input-group label {
+  font-size: 14px;
+  color: #3c1361;
+  font-weight: 500;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+  transition: all 0.3s ease;
+}
+
+.input-group input:focus {
+  border-color: #6a1b9a;
+  outline: none;
+  background-color: #f0f0f0;
+}
+
+.login-button {
+  background: #6a1b9a;
+  color: #ffffff;
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: 20px;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.login-button:hover {
+  background: #8e24aa;
+}
+
+.error-message {
+  color: #e74c3c;
+  margin-bottom: 1rem;
+}
+
+.signup-link,
+.advertiser-login-link {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #6a1b9a;
+}
+
+.signup-link a,
+.advertiser-login-link a {
+  text-decoration: none;
+  color: #6a1b9a;
+  font-weight: bold;
+}
+
+.signup-link a:hover,
+.advertiser-login-link a:hover {
+  color: #8e24aa;
+}

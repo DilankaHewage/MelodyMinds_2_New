@@ -1,0 +1,64 @@
+
+.event-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px;
+    width: 250px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  .event-card-link {
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  .event-poster {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+  
+  .event-details {
+    padding: 10px 0;
+  }
+  
+  .event-details h2 {
+    font-size: 18px;
+    margin: 10px 0;
+  }
+  
+  .event-details p {
+    margin: 5px 0;
+    font-size: 14px;
+  }
+  
+  .event-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .favorite-button,
+  .comment-button {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    color: #333;
+    transition: none;
+  }
+  
+  
+.comment-button:hover {
+    color: #333; /* Ensure the color remains the same on hover */
+    transform: none; /* Remove any scaling or hover effects */
+  }
+  .favorite-button span {
+    margin-left: 5px;
+    font-size: 14px;
+  }
+  

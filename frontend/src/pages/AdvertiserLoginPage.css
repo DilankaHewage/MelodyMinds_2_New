@@ -1,0 +1,23 @@
+/* Styles for the Advertiser Login Page */
+.advertiser-login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: url('/public/images/advertiser login.jpg') no-repeat center center/cover; /* Background image */
+  font-family: 'Poppins', sans-serif;
+}
+
+.login-box {
+  background: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
+  padding: 40px;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.login-box h2 {
+  font-size: 24px;
+}

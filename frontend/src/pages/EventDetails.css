@@ -1,0 +1,198 @@
+.event-details-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.event-title-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.event-title {
+  font-size: 32px;
+  font-weight: bold;
+  color: #020202;
+  margin: 0;
+}
+
+.event-content {
+  display: flex;
+  gap: 20px;
+}
+
+.event-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.event-image {
+  width: 100%;
+  max-width: 400px;
+}
+
+.event-poster-large {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.interaction-section {
+  display: flex;
+  justify-content: center;
+  gap: 200px; /* Increased gap to add more space between the buttons */
+  margin-top: 15px;
+  
+}
+
+
+
+.reaction-button,
+.comment-button {
+  background-color: transparent;
+  border: none;
+  color:  #6d6161; 
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px; /* Space between the icon and text inside the button */
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.reaction-button.liked {
+  color: #6a5acd /* Change color when liked */
+}
+
+.reaction-button:hover,
+.comment-button:hover {
+  color: #5a4cb0;
+  transform: scale(1.1);
+}
+
+.reaction-button:hover,
+.comment-button:hover {
+  color: #5a4cb0;
+  transform: scale(1.2);
+}
+
+.icon {
+  font-size: 25px;
+}
+
+.comment-section {
+  margin-top: 20px;
+  width: 100%;
+}
+
+.comment-section h2 {
+  font-size: 24px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.comment-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+}
+
+.comment-item {
+  background-color: #f1f1f1;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+.add-comment {
+  display: flex;
+  gap: 10px;
+}
+
+.comment-input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.add-comment-button {
+  padding: 10px 20px;
+  background-color: #6a5acd;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.add-comment-button:hover {
+  background-color: #5a4cb0;
+}
+
+.event-right {
+  flex: 2;
+  font-size: 1.2rem;
+  line-height: 1.8;
+}
+
+.buy-tickets-link {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #7809c2;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 1.2rem;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.buy-tickets-link:hover {
+  background-color: #2980b9;
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .event-content {
+    flex-direction: column;
+  }
+
+  .event-right {
+    font-size: 1rem;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.error-dialog {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 10px 20px;
+  border: 1px solid #f5c6cb;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  font-size: 1rem;
+  text-align: center;
+  z-index: 1000;
+}

@@ -1,0 +1,172 @@
+/* Header Container */
+header {
+  background: linear-gradient(90deg, #3c1361, #5e2d79, #b184c5); /* Dark to light purple gradient */
+  padding: 20px 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+  height: 12vh; 
+  
+}
+
+/* Header Inner Container */
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/*Styling the logo*/
+.logo {
+  margin-top: 15px; /* Adjusted margin for better alignment */
+  margin-left: 0px; 
+  width: 210px; 
+  height: 8vh; 
+}
+
+.brand-name {
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.brand-name:hover {
+  transform: scale(1.05); 
+}
+
+/* Navigation Menu */
+nav {
+  display: flex;
+  align-items: center;
+  gap: 70px;
+}
+
+/* Navigation Links */
+.nav-links {
+  list-style: none;
+  display: flex;
+  margin: 0;
+  padding: 0;
+  gap: 70px;
+}
+
+.nav-links li {
+  display: inline;
+}
+
+/* Button Navigation Links (Updated) */
+.nav-link-button {
+  background: none;
+  border: none;
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 18px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.nav-link-button:hover {
+  color: #d1b3ff; /* Lighter purple on hover */
+}
+
+/* Login Button Styling */
+.login-link {
+  background: #6a1b9a; /* Dark purple for the button */
+  padding: 10px 20px;
+  border-radius: 20px;
+  color: #ffffff;
+  font-size: 18px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-left: auto; /* Push to the right */
+  border: none;
+}
+
+.login-link:hover {
+  background: #8e24aa; /* Lighter purple on hover */
+  color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Hover Effects for Nav Links */
+.nav-links li a:hover {
+  color: #d1b3ff; /* Lighter purple on hover */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header-container {
+      flex-direction: column;
+      text-align: center;
+  }
+
+  .nav-links {
+      flex-direction: column;
+      gap: 20px;
+  }
+
+  .login-link {
+      margin: 20px 0 0 0;
+  }
+}
+
+.user-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.user-name-button {
+  background: #f6f2f2 ;
+  border: thin;
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  color: #321818;
+}
+
+/* Dropdown Menu Styling */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #f6f2f2; /* Light background color */
+  border: 1px solid #ccc;
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  z-index: 1000;
+  min-width: 180px; /* Adjusted width */
+  padding: 10px 0; /* Add padding for spacing */
+}
+
+/* Dropdown Items */
+.dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 10px 15px; /* Adjusted padding for better spacing */
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333; /* Dark text color */
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth hover effect */
+}
+
+/* Hover Effect for Dropdown Items */
+.dropdown-item:hover {
+  background-color: #e0dcdc; /* Slightly darker background on hover */
+  color: #000; /* Darker text color on hover */
+}
+
+/* Dropdown Menu Animation */
+.dropdown-menu {
+  animation: fadeIn 0.3s ease-in-out; /* Smooth fade-in animation */
+}
+

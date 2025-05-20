@@ -1,0 +1,199 @@
+.user-dashboard {
+  padding: 20px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.user-dashboard h1 {
+  font-size: 24px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.user-dashboard p {
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+/*///////////*/
+/* Filter Section */
+.filter-section {
+  background-image: url('/public/images/advertiser_create.jpg');
+  background-position: center right;
+  padding: 30px;
+  border-radius: 20px;
+  color: white;
+  margin: 20px auto;
+  max-width: 90%;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  text-align: center;
+}
+  
+  .filter-section h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    text-shadow: 3px 3px rgba(0, 0, 0, 0.3);
+    color: #fff;
+  }
+  
+  /* Date Filter */
+  .filter-date {
+    margin-bottom: 20px;
+    color: #fff;
+  }
+  
+  .filter-date label {
+    font-size: 20px;
+    display: block;
+    margin-bottom: 10px;
+    color: #ffffff;
+  }
+  
+  .filter-date input {
+    padding: 12px;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  /* District Filter */
+  .filter-district {
+    margin-bottom: 20px;
+  }
+  
+  .filter-district label {
+    font-size: 20px;
+    display: block;
+    margin-bottom: 10px;
+    color: #ffffff;
+  }
+  
+  .district-list {
+    margin-top: 10px;
+    display: block; /* Initially hidden */
+  }
+  
+  .district-list input {
+    margin-right: 10px;
+  }
+  
+  .district-list label {
+    font-size: 16px;
+  }
+  
+  .date-styling{
+    color: #fff;
+  }
+  
+  .text-styling{
+    color : #ffffff;
+  }
+  
+  /* Toggle District Button */
+  .toggle-district-btn {
+    display: inline-block;
+    padding: 12px 50px;
+    background-color: white;
+    color: #6a5acd;
+    border: 2px solid #6a5acd;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .toggle-district-btn:hover {
+    background-color: #6a5acd;
+    color: white;
+    box-shadow: 0 5px 15px rgba(106, 90, 205, 0.5);
+  }
+  
+  .district-list {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr); /* 8 districts per row */
+    gap: 15px; /* Adds space between districts */
+    padding: 10px;
+    max-height: 300px; /* Optional: Controls the height of the list */
+    overflow-y: auto; /* Makes the list scrollable if it's taller than the container */
+    justify-items: center; /* Ensures the items are centered within each grid item */
+  }
+  
+  .district-list div {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Aligns checkbox and label horizontally */
+  }
+  
+  .district-list input[type="checkbox"] {
+    margin-right: 10px; /* Adds space between the checkbox and label */
+  }
+  
+  /* Change text color for district labels */
+  .district-list label {
+    color: #fff; /* Change this to your desired color */
+    font-weight: bold; /* Optional: Make text bold */
+    font-size: 14px; /* Optional: Adjust the text size */
+    white-space: nowrap; /* Prevents label text from wrapping */
+  }
+  
+  /* Optional: Change color when hovered over */
+  .district-list label:hover {
+    color: #71cddd;
+  }
+  
+  
+  /* Clear Filters Button */
+  .clear-filters button {
+    display: inline-block;
+    padding: 12px 20px;
+    background-color: rgba(202, 99, 180, 0.964);
+    color: #f3f4f7;
+    border: 2px solid #d94fd2;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .clear-filters button:hover {
+    background-color: #c537b2;
+    color: rgb(14, 13, 13);
+    box-shadow: 0 5px 15px rgba(204, 96, 188, 0.5);
+  }
+
+.event-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+
+.event-card {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.event-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.event-card h3 {
+  font-size: 18px;
+  margin: 10px 0;
+}
+
+.event-card p {
+  font-size: 14px;
+  color: #555;
+} 

@@ -1,0 +1,119 @@
+.advertiser-account-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: url('/public/images/advertiser_create.jpg') no-repeat center center/cover; /* Background image */
+  font-family: 'Poppins', sans-serif;
+}
+
+
+/*Height  for steps */
+.advertiser-account-container.step-1{
+  height: 90vh; 
+}
+
+.advertiser-account-container.step-2{
+  height: 158vh; 
+}
+
+
+.advertiser-account-box {
+  background: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
+  padding: 40px;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.advertiser-account-box h2 {
+  font-size: 22px;
+  margin-bottom: 20px;
+}
+
+/* Styling Next button */
+.next-button {
+  background: #6a1b9a;
+  color: #ffffff;
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: 20px;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.next-button:hover {
+  background: #8e24aa;
+}
+
+/*Styling drop down menu*/
+#sex {
+  width: 420px; 
+  padding: 8px 20px; 
+  font-size: 16px;
+  font-family: 'Poppins', sans-serif;
+  border: 1px solid #ccc; 
+  border-radius: 8px; 
+  color: #696969;  
+}
+
+#sex:focus {
+  border-color: #6a1b9a; 
+}
+
+#sex option:hover {
+  background-color: #f1f1f1; 
+}
+
+
+/* Styling the checkbox */
+.terms-checkbox {
+  display: flex;
+  align-items: center; 
+  gap: 10px; 
+  margin-top: 10px; 
+}
+
+.terms-checkbox input[type="checkbox"] {
+  margin: 0; 
+  width: auto; 
+}
+
+
+
+/* Styling the Create Account button */
+.submit-button {
+  background: #6a1b9a;
+  color: #ffffff;
+  padding: 12px 20px;
+  font-size: 16px;
+  border-radius: 20px;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+  background: #8e24aa;
+}
+
+
+.success-alert {
+  position: fixed;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 20px 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  font-size: 16px;
+  z-index: 1000;
+  text-align: center;
+  animation: fadeOut 1s ease-in-out forwards;
+}
