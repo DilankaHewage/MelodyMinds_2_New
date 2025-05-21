@@ -145,6 +145,7 @@ const AdvertiserEventing = () => {
         </div>
 
         {/* Right Section: Event Card Preview */}
+        // Event Preview Card
         <div className="event-preview-container">
           <h2>Event Preview</h2>
           <PreviewEventCard
