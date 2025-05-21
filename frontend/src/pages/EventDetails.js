@@ -20,7 +20,7 @@ const EventDetails = () => {
     'This is going to be epic!',
     'I’ve already got my tickets!',
   ]); // Initialize with 5 pre-existing comments
-  const [newComment, setNewComment] = useState('');
+  const [newComment, setNewComment] = useState(''); // State to store new comment
   const [showComments, setShowComments] = useState(false);
 
   const [errorMessage, setErrorMessage] = useState(''); // State to store error message
