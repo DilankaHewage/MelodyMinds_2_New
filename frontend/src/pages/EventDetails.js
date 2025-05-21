@@ -20,8 +20,10 @@ const EventDetails = () => {
     'This is going to be epic!',
     'I’ve already got my tickets!',
   ]); // Initialize with 5 pre-existing comments
-  const [newComment, setNewComment] = useState('');
-  const [showComments, setShowComments] = useState(false);// State to toggle comment section visibility
+
+  const [newComment, setNewComment] = useState(''); // State to store new comment
+  const [showComments, setShowComments] = useState(false);
+
 
   const [errorMessage, setErrorMessage] = useState(''); // State to store error message
   const isLoggedIn = !!localStorage.getItem('userToken' ); // Check if the user is logged in

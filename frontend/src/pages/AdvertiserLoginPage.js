@@ -75,4 +75,4 @@ const AdvertiserLoginPage = () => {
   );
 };
 
-export default AdvertiserLoginPage;
+export default AdvertiserLoginPage; 
