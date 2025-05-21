@@ -34,8 +34,8 @@ const AboutUs = () => {
             </div>
             <div className="contact-item">
               <FaMapMarkerAlt className="contact-icon" />
-              <span>Address: 247/1, Union Place, Colombo 02, Sri Lanka</span>
-            </div>
+              <span>Address: 247/1, Union Place, Colombo 02, Sri Lanka</span> //Headoffice  address
+             </div>
             <div className="contact-item">
               <FaPhoneAlt className="contact-icon" />
               <span>Tel: <a href="tel:+947680802962">+94 7680802962</a></span>
