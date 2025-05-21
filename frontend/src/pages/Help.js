@@ -5,12 +5,15 @@ import { useNavigate } from 'react-router-dom';
 function HelpPage() {
   const navigate = useNavigate();
 
-  // Check if user is logged in (from localStorage)
-  const user = JSON.parse(localStorage.getItem('user'));
+  // Check tokens in localStorage
+  const userToken = localStorage.getItem('userToken');
+  const advertiserToken = localStorage.getItem('token');
 
   const handleBackClick = () => {
-    if (user) {
-      navigate('/userdashboard'); // change this route if your dashboard path is different
+    if (userToken) {
+      navigate('/userdashboard');
+    } else if (advertiserToken) {
+      navigate('/advertiser-dashboard');
     } else {
       navigate('/');
     }
