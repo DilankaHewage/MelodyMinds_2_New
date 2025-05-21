@@ -9,6 +9,6 @@ const testPassword = async () => {
   console.log('Plain Password:', plainPassword);
   console.log('Hashed Password:', hashedPassword);
   console.log('Password Match Result:', isMatch);
-};
+}; // This function hashes a password and then compares it to the original password
 
 testPassword();

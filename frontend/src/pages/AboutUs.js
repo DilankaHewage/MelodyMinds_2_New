@@ -14,7 +14,7 @@ const AboutUs = () => {
           <h2>Our Mission</h2>
           <p>
             Melody Minds is dedicated to connecting music enthusiasts with the best events, concerts, and experiences in Sri Lanka. 
-            Whether you're a fan of live performances, cultural shows, or modern music festivals, we aim to be your trusted guide.
+            Whether you're a fan of live performances, cultural shows, or modern music festivals, we aim to be your trusted guide and partner.
           </p>
         </section>
         <section className="about-section">
