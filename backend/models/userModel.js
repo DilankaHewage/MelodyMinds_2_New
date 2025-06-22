@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 const userSchema = mongoose.Schema(
@@ -16,27 +15,35 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    role: {
+      type: String,
+      enum: ['user', 'advertiser', 'admin'],
+      default: 'user',
+    },
   },
   {
-    timestamps: true,
+    timestamps: true, // Automatically adds createdAt and updatedAt
   }
 );
 
-// Encrypt the password before saving
+// Pre-save hook to hash the password before saving
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
-    next();
+    return next(); // Skip hashing if the password hasn't changed
   }
 
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
+  // Hash the password before saving
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
 });
 
-// Match entered password with the hashed password
+// Method to compare entered password with stored hash
 userSchema.methods.matchPassword = async function (enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.password);
+  console.log('Entered Password:', enteredPassword); // Debug: Log the entered password
+  console.log('Stored Hashed Password:', this.password); // Debug: Log the stored hashed password
+  return await bcrypt.compare(enteredPassword, this.password); 
 };
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema); // Create the User model
 
 export default User;

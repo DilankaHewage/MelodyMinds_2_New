@@ -6,6 +6,7 @@ import userRoutes from './routes/user.route.js';
 import advertiserRoutes from './routes/advertiser.route.js';
 import eventRoutes from './routes/event.route.js';
 import commentRoutes from './routes/comment.route.js';
+import User from './models/user.model.js';
 
 // Load environment variables
 dotenv.config();
@@ -36,6 +37,7 @@ const connectDB = async () => {
   try {
     const conn = await mongoose.connect(process.env.MONGO_URI); // Updated to omit deprecated options
     console.log(`MongoDB Connected: ${conn.connection.host}`); // Log the connection host
+    return conn;
   } catch (error) {
     console.error(`Error: ${error.message}`); // Log the error message
     process.exit(1);
@@ -43,7 +45,28 @@ const connectDB = async () => {
 };
 
 // Connect to the database
-connectDB();
+connectDB().then(async () => {
+  // Create admin user if not exists
+  const adminEmail = process.env.ADMIN_EMAIL;
+  const adminPassword = process.env.ADMIN_PASSWORD;
+  const adminName = process.env.ADMIN_NAME || 'Admin';
+  if (adminEmail && adminPassword) {
+    const adminExists = await User.findOne({ role: 'admin' });
+    if (!adminExists) {
+      await User.create({
+        name: adminName,
+        email: adminEmail,
+        password: adminPassword,
+        role: 'admin',
+      });
+      console.log('Default admin user created');
+    } else {
+      console.log('Admin user already exists');
+    }
+  } else {
+    console.warn('Admin credentials not set in environment variables. Skipping admin creation.');
+  }
+});
 
 // Routes
 app.use('/api/users', userRoutes);

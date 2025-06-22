@@ -2,37 +2,12 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/user.model.js';
 import { registerUser, loginUser } from '../controllers/user.controller.js';
+import { protect, adminOnly } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
 // Middleware to protect routes
-export const protect = async (req, res, next) => {
-  let token;
 
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-    try {
-      // Extract token from the Authorization header
-      token = req.headers.authorization.split(' ')[1];
-
-      // Verify the token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-      // Attach the user to the request object
-      req.user = await User.findById(decoded.id).select('-password');
-
-      if (!req.user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-
-      next();
-    } catch (error) {
-      console.error('Token validation failed:', error);
-      res.status(401).json({ message: 'Not authorized, token failed' });
-    }
-  } else {
-    res.status(401).json({ message: 'Not authorized, no token' });
-  }
-};
 
 // Routes
 router.post('/register', registerUser);
@@ -84,6 +59,52 @@ router.put('/profile', protect, async (req, res) => {
     });
   } catch (error) {
     console.error('Error updating user profile:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Admin-only: Get all users
+router.get('/', protect, adminOnly, async (req, res) => {
+  try {
+    const users = await User.find().select('-password');
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Admin-only: Delete a user
+router.delete('/:id', protect, adminOnly, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    await user.remove();
+    res.json({ message: 'User removed' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Admin-only: Update a user
+router.put('/:id', protect, adminOnly, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+    user.role = req.body.role || user.role;
+    const updatedUser = await user.save();
+    res.json({
+      id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      role: updatedUser.role,
+    });
+  } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
 });

@@ -23,13 +23,21 @@ const LoginPage = () => {
       });
 
       // Handle successful login (Store JWT in localStorage or context)
-      const { token, userId, userName } = response.data;
+      const { token, userId, userName, role } = response.data;
       localStorage.setItem('userToken', token); // Store token in localStorage for future requests
       localStorage.setItem('userId', userId); // Store user ID for comment ownership checks
       localStorage.setItem('userName', userName); // Store user name for display
+      localStorage.setItem('userRole', role); // Store user role for routing
 
       console.log('Login successful:', response.data);
-      navigate('/userdashboard'); // Redirect user to User Dashboard after login
+      if (role === 'admin') {
+        navigate('/admin-dashboard');
+      }else if (role === 'advertiser') {
+        navigate('/advertiser-dashboard');
+      }
+       else {
+        navigate('/userdashboard');
+      }
     } catch (error) {
       // Handle errors (e.g., invalid credentials)
       console.error('Login error:', error);

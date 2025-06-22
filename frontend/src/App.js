@@ -18,6 +18,7 @@ import AboutUs from './pages/AboutUs';
 import { useState } from 'react';
 import AdvertiserEventing from './pages/AdvertiserEventing';
 import Help from './pages/Help'; 
+import AdminDashboard from './pages/AdminDashboard';
 
 
 function App() {
@@ -51,7 +52,14 @@ function App() {
               }
             />
            <Route path="/advertiser-dashboard" element={<AdvertiserDashboard />} />
-    
+           <Route
+             path="/admin-dashboard"
+             element={
+               <ProtectedRoute role="admin">
+                 <AdminDashboard />
+               </ProtectedRoute>
+             }
+           />
           </Routes>
         </main>
         <Footer />

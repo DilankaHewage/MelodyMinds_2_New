@@ -1,0 +1,132 @@
+.admin-dashboard {
+  display: flex;
+  min-height: 100vh;
+  background: #f7f8fa;
+}
+
+.admin-sidebar {
+  width: 220px;
+  background: #232946;
+  color: #fff;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.admin-sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.admin-sidebar li {
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.admin-sidebar li.active, .admin-sidebar li:hover {
+  background: #eebbc3;
+  color: #232946;
+}
+
+.admin-main {
+  flex: 1;
+  padding: 2rem;
+}
+
+.user-management-section h2 {
+  margin-bottom: 1.5rem;
+}
+
+.analytics-cards {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+.analytics-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  padding: 1.5rem 2rem;
+  min-width: 180px;
+  text-align: center;
+}
+.analytics-card h3 {
+  margin-bottom: 0.5rem;
+  color: #232946;
+  font-size: 1.1rem;
+}
+.analytics-card p {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #eebbc3;
+}
+
+.charts-section {
+  margin-bottom: 2rem;
+}
+.chart-placeholder {
+  background: #fff;
+  border-radius: 10px;
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #aaa;
+  font-size: 1.2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+.user-table th, .user-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #f0f0f0;
+}
+.user-table th {
+  background: #eebbc3;
+  color: #232946;
+  font-weight: 600;
+}
+.user-table tr:last-child td {
+  border-bottom: none;
+}
+.user-table button {
+  margin-right: 0.5rem;
+  padding: 0.4rem 1rem;
+  border: none;
+  border-radius: 5px;
+  background: #232946;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.user-table button:hover {
+  background: #eebbc3;
+  color: #232946;
+}
+
+.error-message {
+  color: #d7263d;
+  margin-bottom: 1rem;
+}
+
+.placeholder-section {
+  background: #fff;
+  border-radius: 10px;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #aaa;
+  font-size: 1.3rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+} 
