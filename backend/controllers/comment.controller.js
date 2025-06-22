@@ -86,6 +86,9 @@ export const updateComment = async (req, res) => {
   }
 };
 
+
+
+   
 // Delete a comment
 export const deleteComment = async (req, res) => {
   try {
@@ -111,3 +114,4 @@ export const deleteComment = async (req, res) => {
     res.status(500).json({ message: 'Failed to delete comment' });
   }
 }; 
+
