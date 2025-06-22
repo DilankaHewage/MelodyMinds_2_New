@@ -64,7 +64,12 @@ function Header() {
   };
 
   const handleHomeClick = () => {
-    if (userToken) {
+    const userRole = localStorage.getItem('userRole');
+    if (userRole === 'admin') {
+      navigate('/admin-dashboard');
+    } else if (userRole === 'advertiser') {
+      navigate('/advertiser-dashboard');
+    } else if (userRole === 'user') {
       navigate('/userdashboard');
     } else if (advertiserToken) {
       navigate('/advertiser-dashboard');

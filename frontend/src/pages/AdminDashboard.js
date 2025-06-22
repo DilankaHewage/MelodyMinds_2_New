@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './AdminDashboard.css';
+import UserDashboard from './UserDashboard';
+import AdvertiserDashboard from './AdvertiserDashboard';
+
+const USERS_PER_PAGE = 10;
 
 const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
@@ -10,6 +14,7 @@ const AdminDashboard = () => {
   const [editUserData, setEditUserData] = useState({ name: '', email: '', role: '' });
   const [analytics, setAnalytics] = useState({ totalUsers: 0, activeUsers: 0, totalAdvertisers: 0, topAdvertiser: null });
   const [activeSection, setActiveSection] = useState('user-management');
+  const [currentPage, setCurrentPage] = useState(1);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -42,6 +47,10 @@ const AdminDashboard = () => {
     fetchUsers();
   }, []);
 
+  // Pagination logic
+  const totalPages = Math.ceil(users.length / USERS_PER_PAGE);
+  const paginatedUsers = users.slice((currentPage - 1) * USERS_PER_PAGE, currentPage * USERS_PER_PAGE);
+
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this user?')) return;
     try {
@@ -73,6 +82,12 @@ const AdminDashboard = () => {
       fetchUsers();
     } catch (err) {
       setError('Failed to update user');
+    }
+  };
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
     }
   };
 
@@ -115,6 +130,7 @@ const AdminDashboard = () => {
             {loading ? (
               <p>Loading users...</p>
             ) : (
+              <>
               <table className="user-table">
                 <thead>
                   <tr>
@@ -125,7 +141,7 @@ const AdminDashboard = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((user) => (
+                  {paginatedUsers.map((user) => (
                     <tr key={user._id}>
                       <td>
                         {editUserId === user._id ? (
@@ -179,14 +195,20 @@ const AdminDashboard = () => {
                   ))}
                 </tbody>
               </table>
+              <div className="pagination">
+                <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>Prev</button>
+                <span>Page {currentPage} of {totalPages}</span>
+                <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>Next</button>
+              </div>
+              </>
             )}
           </div>
         )}
         {activeSection === 'user-dashboard' && (
-          <div className="placeholder-section">User Dashboard (Coming Soon)</div>
+          <div className="admin-embed-dashboard"><UserDashboard /></div>
         )}
         {activeSection === 'advertiser-dashboard' && (
-          <div className="placeholder-section">Advertiser Dashboard (Coming Soon)</div>
+          <div className="admin-embed-dashboard"><AdvertiserDashboard /></div>
         )}
       </main>
     </div>

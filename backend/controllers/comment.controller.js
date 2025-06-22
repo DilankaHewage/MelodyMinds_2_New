@@ -1,113 +1,219 @@
-import Comment from '../models/comment.model.js';
-import User from '../models/user.model.js';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import './AdminDashboard.css';
+import UserDashboard from './UserDashboard';
+import AdvertiserDashboard from './AdvertiserDashboard';
+import { FaEdit, FaTrash, FaSave } from 'react-icons/fa';
 
-// Create a new comment
-export const createComment = async (req, res) => {
-  try {
-    const { content, eventId } = req.body;
-    const userId = req.user.id;
+const USERS_PER_PAGE = 10;
 
-    if (!content || !eventId) {
-      return res.status(400).json({ message: 'Content and event ID are required' });
+const AdminDashboard = () => {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [editUserId, setEditUserId] = useState(null);
+  const [editUserData, setEditUserData] = useState({ name: '', email: '', role: '' });
+  const [analytics, setAnalytics] = useState({ totalUsers: 0, activeUsers: 0, totalAdvertisers: 0, topAdvertiser: null });
+  const [activeSection, setActiveSection] = useState('user-management');
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const fetchUsers = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const token = localStorage.getItem('userToken');
+      const config = { headers: { Authorization: `Bearer ${token}` } };
+      const { data } = await axios.get('http://localhost:5000/api/users/', config);
+      setUsers(data);
+      // Analytics calculation
+      const totalUsers = data.length;
+      const totalAdvertisers = data.filter(u => u.role === 'advertiser').length;
+      // For demo, active users = users updated in last 30 days
+      const now = new Date();
+      const activeUsers = data.filter(u => u.updatedAt && (now - new Date(u.updatedAt)) < 30 * 24 * 60 * 60 * 1000).length;
+      // Highly engaged advertiser: advertiser with most recent update
+      const advertisers = data.filter(u => u.role === 'advertiser');
+      let topAdvertiser = null;
+      if (advertisers.length > 0) {
+        topAdvertiser = advertisers.reduce((a, b) => new Date(a.updatedAt) > new Date(b.updatedAt) ? a : b);
+      }
+      setAnalytics({ totalUsers, activeUsers, totalAdvertisers, topAdvertiser });
+    } catch (err) {
+      setError('Failed to fetch users');
     }
+    setLoading(false);
+  };
 
-    // Get user name for the comment
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  // Pagination logic
+  const totalPages = Math.ceil(users.length / USERS_PER_PAGE);
+  const paginatedUsers = users.slice((currentPage - 1) * USERS_PER_PAGE, currentPage * USERS_PER_PAGE);
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this user?')) return;
+    try {
+      const token = localStorage.getItem('userToken');
+      const config = { headers: { Authorization: `Bearer ${token}` } };
+      await axios.delete(`http://localhost:5000/api/users/${id}`, config);
+      setUsers(users.filter((u) => u._id !== id));
+      fetchUsers();
+    } catch (err) {
+      setError('Failed to delete user');
     }
+  };
 
-    const comment = new Comment({
-      content,
-      user: userId,
-      event: eventId,
-      userName: user.name
-    });
+  const handleEdit = (user) => {
+    setEditUserId(user._id);
+    setEditUserData({ name: user.name, email: user.email, role: user.role });
+  };
 
-    const savedComment = await comment.save();
-    
-    // Populate user info for response
-    await savedComment.populate('user', 'name email');
-    
-    res.status(201).json(savedComment);
-  } catch (error) {
-    console.error('Error creating comment:', error);
-    res.status(500).json({ message: 'Failed to create comment' });
-  }
+  const handleEditChange = (e) => {
+    setEditUserData({ ...editUserData, [e.target.name]: e.target.value });
+  };
+
+  const handleEditSave = async () => {
+    try {
+      const token = localStorage.getItem('userToken');
+      const config = { headers: { Authorization: `Bearer ${token}` } };
+      await axios.put(`http://localhost:5000/api/users/${editUserId}`, editUserData, config);
+      setEditUserId(null);
+      fetchUsers();
+    } catch (err) {
+      setError('Failed to update user');
+    }
+  };
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+
+  return (
+    <div className="admin-dashboard">
+      <aside className="admin-sidebar">
+        <ul>
+          <li className={activeSection === 'user-management' ? 'active' : ''} onClick={() => setActiveSection('user-management')}>User Management</li>
+          <li className={activeSection === 'user-dashboard' ? 'active' : ''} onClick={() => setActiveSection('user-dashboard')}>User Dashboard</li>
+          <li className={activeSection === 'advertiser-dashboard' ? 'active' : ''} onClick={() => setActiveSection('advertiser-dashboard')}>Advertiser Dashboard</li>
+        </ul>
+      </aside>
+      <main className="admin-main">
+        {activeSection === 'user-management' && (
+          <div className="user-management-section">
+            <h2>User Management</h2>
+            <div className="analytics-cards">
+              <div className="analytics-card">
+                <h3>Total Users</h3>
+                <p>{analytics.totalUsers}</p>
+              </div>
+              <div className="analytics-card">
+                <h3>Active Users</h3>
+                <p>{analytics.activeUsers}</p>
+              </div>
+              <div className="analytics-card">
+                <h3>Total Advertisers</h3>
+                <p>{analytics.totalAdvertisers}</p>
+              </div>
+              <div className="analytics-card">
+                <h3>Top Advertiser</h3>
+                <p>{analytics.topAdvertiser ? analytics.topAdvertiser.name : 'N/A'}</p>
+              </div>
+            </div>
+            <div className="charts-section">
+              {/* Placeholder for charts, e.g., pie/bar charts for analytics */}
+              <div className="chart-placeholder">[Charts will be here]</div>
+            </div>
+            {error && <div className="error-message">{error}</div>}
+            {loading ? (
+              <p>Loading users...</p>
+            ) : (
+              <>
+              <table className="user-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedUsers.map((user) => (
+                    <tr key={user._id}>
+                      <td>
+                        {editUserId === user._id ? (
+                          <input
+                            type="text"
+                            name="name"
+                            value={editUserData.name}
+                            onChange={handleEditChange}
+                          />
+                        ) : (
+                          user.name
+                        )}
+                      </td>
+                      <td>
+                        {editUserId === user._id ? (
+                          <input
+                            type="email"
+                            name="email"
+                            value={editUserData.email}
+                            onChange={handleEditChange}
+                          />
+                        ) : (
+                          user.email
+                        )}
+                      </td>
+                      <td>
+                        {editUserId === user._id ? (
+                          <select name="role" value={editUserData.role} onChange={handleEditChange}>
+                            <option value="user">User</option>
+                            <option value="advertiser">Advertiser</option>
+                            <option value="admin">Admin</option>
+                          </select>
+                        ) : (
+                          user.role
+                        )}
+                      </td>
+                      <td>
+                        {editUserId === user._id ? (
+                          <>
+                            <button onClick={handleEditSave} title="Save"><FaSave /></button>
+                            <button onClick={() => setEditUserId(null)} title="Cancel">✖</button>
+                          </>
+                        ) : (
+                          <>
+                            <button className="icon-btn edit-btn" onClick={() => handleEdit(user)} title="Edit"><FaEdit /></button>
+                            <button className="icon-btn delete-btn" onClick={() => handleDelete(user._id)} title="Delete"><FaTrash /></button>
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="pagination">
+                <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>Prev</button>
+                <span>Page {currentPage} of {totalPages}</span>
+                <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>Next</button>
+              </div>
+              </>
+            )}
+          </div>
+        )}
+        {activeSection === 'user-dashboard' && (
+          <div className="admin-embed-dashboard"><UserDashboard /></div>
+        )}
+        {activeSection === 'advertiser-dashboard' && (
+          <div className="admin-embed-dashboard"><AdvertiserDashboard /></div>
+        )}
+      </main>
+    </div>
+  );
 };
 
-// Get all comments for an event
-export const getEventComments = async (req, res) => {
-  try {
-    const { eventId } = req.params;
-    
-    const comments = await Comment.find({ event: eventId })
-      .populate('user', 'name email')
-      .sort({ createdAt: -1 }); // Sort by newest first
-    
-    res.status(200).json(comments);
-  } catch (error) {
-    console.error('Error fetching comments:', error);
-    res.status(500).json({ message: 'Failed to fetch comments' });
-  }
-};
-
-// Update a comment
-export const updateComment = async (req, res) => {
-  try {
-    const { commentId } = req.params;
-    const { content } = req.body;
-    const userId = req.user.id;
-
-    if (!content) {
-      return res.status(400).json({ message: 'Content is required' });
-    }
-
-    const comment = await Comment.findById(commentId);
-    
-    if (!comment) {
-      return res.status(404).json({ message: 'Comment not found' });
-    }
-
-    // Check if the user owns this comment
-    if (comment.user.toString() !== userId) {
-      return res.status(403).json({ message: 'Not authorized to update this comment' });
-    }
-
-    comment.content = content;
-    const updatedComment = await comment.save();
-    
-    await updatedComment.populate('user', 'name email');
-    
-    res.status(200).json(updatedComment);
-  } catch (error) {
-    console.error('Error updating comment:', error);
-    res.status(500).json({ message: 'Failed to update comment' });
-  }
-};
-
-// Delete a comment
-export const deleteComment = async (req, res) => {
-  try {
-    const { commentId } = req.params;
-    const userId = req.user.id;
-
-    const comment = await Comment.findById(commentId);
-    
-    if (!comment) {
-      return res.status(404).json({ message: 'Comment not found' });
-    }
-
-    // Check if the user owns this comment
-    if (comment.user.toString() !== userId) {
-      return res.status(403).json({ message: 'Not authorized to delete this comment' });
-    }
-
-    await Comment.findByIdAndDelete(commentId);
-    
-    res.status(200).json({ message: 'Comment deleted successfully' });
-  } catch (error) {
-    console.error('Error deleting comment:', error);
-    res.status(500).json({ message: 'Failed to delete comment' });
-  }
-}; 
+export default AdminDashboard; 
