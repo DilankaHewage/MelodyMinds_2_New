@@ -23,8 +23,10 @@ const LoginPage = () => {
       });
 
       // Handle successful login (Store JWT in localStorage or context)
-      const { token } = response.data;
+      const { token, userId, userName } = response.data;
       localStorage.setItem('userToken', token); // Store token in localStorage for future requests
+      localStorage.setItem('userId', userId); // Store user ID for comment ownership checks
+      localStorage.setItem('userName', userName); // Store user name for display
 
       console.log('Login successful:', response.data);
       navigate('/userdashboard'); // Redirect user to User Dashboard after login

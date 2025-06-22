@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import './EventDetails.css';
-import { FaHeart, FaComment } from 'react-icons/fa';
+import { FaHeart, FaComment, FaEdit, FaTrash, FaCheck, FaTimes } from 'react-icons/fa';
 
 const EventDetails = () => {
   const { id } = useParams(); // Get the event ID from the URL
@@ -13,51 +13,144 @@ const EventDetails = () => {
   const [reactions, setReactions] = useState(20);
   const [isLiked, setIsLiked] = useState(false);
 
-  const [comments, setComments] = useState([
-    'Amazing event! Can’t wait to attend.',
-    'Looking forward to this!',
-    'The lineup looks fantastic!',
-    'This is going to be epic!',
-    'I’ve already got my tickets!',
-  ]); // Initialize with 5 pre-existing comments
-
+  const [comments, setComments] = useState([]); // Initialize with empty array
   const [newComment, setNewComment] = useState(''); // State to store new comment
   const [showComments, setShowComments] = useState(false);
-
+  const [editingComment, setEditingComment] = useState(null); // Track which comment is being edited
+  const [editContent, setEditContent] = useState(''); // Content for editing
 
   const [errorMessage, setErrorMessage] = useState(''); // State to store error message
-  const isLoggedIn = !!localStorage.getItem('userToken' ); // Check if the user is logged in
+  const [successMessage, setSuccessMessage] = useState(''); // State to store success message
+  const isLoggedIn = !!localStorage.getItem('userToken'); // Check if the user is logged in
+  const currentUserId = localStorage.getItem('userId'); // Get current user ID
 
-  const handleReaction = () => {
-    if (!isLoggedIn) {
-      setErrorMessage('You need to log in to react to this event.'); // Set error message
-      setTimeout(() => setErrorMessage(''), 3000); // Clear the error message after 3 seconds
-      return;
+  // Fetch comments for the event
+  const fetchComments = async () => {
+    try {
+      const { data } = await axios.get(`http://localhost:5000/api/comments/event/${id}`);
+      setComments(data);
+    } catch (err) {
+      console.error('Error fetching comments:', err);
     }
-    if (isLiked) {
-      setReactions(reactions - 1); // Decrement reaction count
-    } else {
-      setReactions(reactions + 1); // Increment reaction count
-    }
-    setIsLiked(!isLiked); // Toggle the like state
   };
 
-  const handleAddComment = () => {
+  // Add a new comment
+  const handleAddComment = async () => {
     if (!isLoggedIn) {
-      setErrorMessage('You need to log in to post a comment.'); // Set error message
-      setTimeout(() => setErrorMessage(''), 3000); // Clear the error message after 3 seconds
+      setErrorMessage('You need to log in to post a comment.');
+      setTimeout(() => setErrorMessage(''), 3000);
       return;
     }
     if (newComment.trim() !== '') {
-      setComments([...comments, newComment]); // Add new comment to the list
-      setNewComment(''); // Clear the input field
+      try {
+        const token = localStorage.getItem('userToken');
+        const { data } = await axios.post(
+          'http://localhost:5000/api/comments',
+          {
+            content: newComment,
+            eventId: id
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+        setComments([data, ...comments]); // Add new comment to the beginning
+        setNewComment('');
+        setSuccessMessage('Comment added successfully!');
+        setTimeout(() => setSuccessMessage(''), 3000);
+      } catch (err) {
+        console.error('Error adding comment:', err);
+        setErrorMessage('Failed to add comment. Please try again.');
+        setTimeout(() => setErrorMessage(''), 3000);
+      }
     }
+  };
+
+  // Start editing a comment
+  const handleEditComment = (comment) => {
+    setEditingComment(comment._id);
+    setEditContent(comment.content);
+  };
+
+  // Save edited comment
+  const handleSaveEdit = async (commentId) => {
+    try {
+      const token = localStorage.getItem('userToken');
+      const { data } = await axios.put(
+        `http://localhost:5000/api/comments/${commentId}`,
+        { content: editContent },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      
+      setComments(comments.map(comment => 
+        comment._id === commentId ? data : comment
+      ));
+      setEditingComment(null);
+      setEditContent('');
+      setSuccessMessage('Comment updated successfully!');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err) {
+      console.error('Error updating comment:', err);
+      setErrorMessage('Failed to update comment. Please try again.');
+      setTimeout(() => setErrorMessage(''), 3000);
+    }
+  };
+
+  // Cancel editing
+  const handleCancelEdit = () => {
+    setEditingComment(null);
+    setEditContent('');
+  };
+
+  // Delete a comment
+  const handleDeleteComment = async (commentId) => {
+    if (window.confirm('Are you sure you want to delete this comment?')) {
+      try {
+        const token = localStorage.getItem('userToken');
+        await axios.delete(
+          `http://localhost:5000/api/comments/${commentId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+        
+        setComments(comments.filter(comment => comment._id !== commentId));
+        setSuccessMessage('Comment deleted successfully!');
+        setTimeout(() => setSuccessMessage(''), 3000);
+      } catch (err) {
+        console.error('Error deleting comment:', err);
+        setErrorMessage('Failed to delete comment. Please try again.');
+        setTimeout(() => setErrorMessage(''), 3000);
+      }
+    }
+  };
+
+  const handleReaction = () => {
+    if (!isLoggedIn) {
+      setErrorMessage('You need to log in to react to this event.');
+      setTimeout(() => setErrorMessage(''), 3000);
+      return;
+    }
+    if (isLiked) {
+      setReactions(reactions - 1);
+    } else {
+      setReactions(reactions + 1);
+    }
+    setIsLiked(!isLiked);
   };
 
   useEffect(() => {
     const fetchEventDetails = async () => {
       try {
-        const { data } = await axios.get(`http://localhost:5000/api/events/${id}`); // Fetch event by ID
+        const { data } = await axios.get(`http://localhost:5000/api/events/${id}`);
         setEvent(data);
         setLoading(false);
       } catch (err) {
@@ -68,6 +161,7 @@ const EventDetails = () => {
     };
 
     fetchEventDetails();
+    fetchComments(); // Fetch comments when component mounts
   }, [id]);
 
   if (loading) {
@@ -91,7 +185,12 @@ const EventDetails = () => {
         </div>
       )}
 
-  
+      {/* Success Dialog */}
+      {successMessage && (
+        <div className="success-dialog">
+          <p>{successMessage}</p>
+        </div>
+      )}
 
       {/* Centered Event Title */}
       <div className="event-title-container">
@@ -126,8 +225,62 @@ const EventDetails = () => {
             <div className="comment-section">
               <h2>Comments</h2>
               <ul className="comment-list">
-                {comments.map((comment, index) => (
-                  <li key={index} className="comment-item">{comment}</li>
+                {comments.map((comment) => (
+                  <li key={comment._id} className="comment-item">
+                    <div className="comment-header">
+                      <span className="comment-author">{comment.userName}</span>
+                      <span className="comment-date">
+                        {new Date(comment.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                    
+                    {editingComment === comment._id ? (
+                      <div className="comment-edit">
+                        <input
+                          type="text"
+                          value={editContent}
+                          onChange={(e) => setEditContent(e.target.value)}
+                          className="edit-comment-input"
+                        />
+                        <div className="edit-actions">
+                          <button 
+                            onClick={() => handleSaveEdit(comment._id)}
+                            className="save-edit-btn"
+                          >
+                            <FaCheck />
+                          </button>
+                          <button 
+                            onClick={handleCancelEdit}
+                            className="cancel-edit-btn"
+                          >
+                            <FaTimes />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="comment-content">
+                        <p>{comment.content}</p>
+                        {currentUserId === comment.user._id && (
+                          <div className="comment-actions">
+                            <button 
+                              onClick={() => handleEditComment(comment)}
+                              className="edit-btn"
+                              title="Edit comment"
+                            >
+                              <FaEdit />
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteComment(comment._id)}
+                              className="delete-btn"
+                              title="Delete comment"
+                            >
+                              <FaTrash />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </li>
                 ))}
               </ul>
               {isLoggedIn ? (
@@ -138,6 +291,7 @@ const EventDetails = () => {
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                     className="comment-input"
+                    onKeyPress={(e) => e.key === 'Enter' && handleAddComment()}
                   />
                   <button onClick={handleAddComment} className="add-comment-button">Post</button>
                 </div>
@@ -160,7 +314,7 @@ const EventDetails = () => {
             <p><strong>Ticket Prices:</strong> {event.ticketPrice}</p>
             {event.ticketLink && (
               <a
-                 href="https://www.google.com" // Updated link to redirect to Google
+                 href="https://www.google.com"
                  target="_blank"
                   rel="noopener noreferrer"
                  className="buy-tickets-link">

@@ -5,6 +5,7 @@ import cors from 'cors'; // Import CORS
 import userRoutes from './routes/user.route.js';
 import advertiserRoutes from './routes/advertiser.route.js';
 import eventRoutes from './routes/event.route.js';
+import commentRoutes from './routes/comment.route.js';
 
 // Load environment variables
 dotenv.config();
@@ -26,6 +27,9 @@ app.use(cors({
 
 // Add this line to include event routes
 app.use('/api/events', eventRoutes);
+
+// Add comment routes
+app.use('/api/comments', commentRoutes);
 
 // MongoDB Connection
 const connectDB = async () => {

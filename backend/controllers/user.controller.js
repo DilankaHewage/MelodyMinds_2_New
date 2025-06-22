@@ -41,6 +41,8 @@ export const registerUser = async (req, res) => {
       _id: user.id,
       name: user.name,
       email: user.email,
+      userId: user.id,
+      userName: user.name
     });
   } catch (error) {
     console.error("Error during registration:", error);
@@ -91,6 +93,8 @@ export const loginUser = async (req, res) => {
     res.status(200).json({
       message: 'Login successful',
       token,
+      userId: user._id,
+      userName: user.name
     });
 
   } catch (error) {
