@@ -86,9 +86,6 @@ export const updateComment = async (req, res) => {
   }
 };
 
-
-
-   
 // Delete a comment
 export const deleteComment = async (req, res) => {
   try {
@@ -113,5 +110,17 @@ export const deleteComment = async (req, res) => {
     console.error('Error deleting comment:', error);
     res.status(500).json({ message: 'Failed to delete comment' });
   }
-}; 
+};
+
+// Get comment count for an event
+export const getEventCommentCount = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const count = await Comment.countDocuments({ event: eventId });
+    res.status(200).json({ count });
+  } catch (error) {
+    console.error('Error fetching comment count:', error);
+    res.status(500).json({ message: 'Failed to fetch comment count' });
+  }
+};
 

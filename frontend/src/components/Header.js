@@ -65,7 +65,10 @@ function Header() {
 
   const handleHomeClick = () => {
     const userRole = localStorage.getItem('userRole');
-    if (userRole === 'admin') {
+    if (!userToken && !advertiserToken) {
+      // Not logged in, always go to home
+      navigate('/');
+    } else if (userRole === 'admin') {
       navigate('/admin-dashboard');
     } else if (userRole === 'advertiser') {
       navigate('/advertiser-dashboard');
