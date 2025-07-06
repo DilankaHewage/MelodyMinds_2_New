@@ -233,7 +233,7 @@ const EventDetails = () => {
                         {new Date(comment.createdAt).toLocaleDateString()}
                       </span>
                     </div>
-                    
+                    {console.log(currentUserId)}
                     {editingComment === comment._id ? (
                       <div className="comment-edit">
                         <input

@@ -58,6 +58,7 @@ function Header() {
     // Remove both tokens for clean logout
     localStorage.removeItem('userToken');
     localStorage.removeItem('token');
+    localStorage.removeItem('userId');
     
     setUserName('');
     navigate('/login');
