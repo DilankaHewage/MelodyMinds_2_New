@@ -36,7 +36,7 @@ const AdvertiserDashboard = () => {
         {/* Add Event Sketch */}
         <div className="event-card empty-card" onClick={handleAddEventClick}>
           <p>Add a new event</p>
-          <button className="add-event-btn">+ Add Event</button> // Button to add a new event
+          <button className="add-event-btn">+ Add Event</button> 
         </div>
 
         {/* Render Fetched Events */}

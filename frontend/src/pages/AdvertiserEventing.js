@@ -129,23 +129,23 @@ const AdvertiserEventing = () => {
               <input type="text" name="artist" value={eventData.artist} onChange={handleChange} required />
             </div>
             <div className="form-group">
-              <label>Ticket Price</label>
-              <input type="text" name="ticketPrice" value={eventData.ticketPrice} onChange={handleChange} required />
+              <label>Ticket Price (Rs)</label>
+              <input type="number" name="ticketPrice" value={eventData.ticketPrice} onChange={handleChange} required />
             </div>
             <div className="form-group">
-              <label>Ticket Link</label>
-              <input type="url" name="ticketLink" value={eventData.ticketLink} onChange={handleChange} required />
+              <label>Ticket Count</label>
+              <input type="number" name="ticketLink" value={eventData.ticketLink} onChange={handleChange} required />
             </div>
             <div className="form-group">
               <label>Poster</label>
               <input type="file" accept="image/*" onChange={handlePosterChange} required />
             </div>
-            <button type="submit" className="submit-button">Create Event</button>
+            <button type="submit" className="submit-button">Proceed to Payment</button>
           </form>
         </div>
 
         {/* Right Section: Event Card Preview */}
-        // Event Preview Card
+     
         <div className="event-preview-container">
           <h2>Event Preview</h2>
           <PreviewEventCard
