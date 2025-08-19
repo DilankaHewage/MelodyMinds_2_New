@@ -65,22 +65,37 @@ function Header() {
   };
 
   const handleHomeClick = () => {
-    const userRole = localStorage.getItem('userRole');
-    if (!userToken && !advertiserToken) {
-      // Not logged in, always go to home
-      navigate('/');
-    } else if (userRole === 'admin') {
-      navigate('/admin-dashboard');
-    } else if (userRole === 'advertiser') {
-      navigate('/advertiser-dashboard');
-    } else if (userRole === 'user') {
-      navigate('/userdashboard');
-    } else if (advertiserToken) {
-      navigate('/advertiser-dashboard');
-    } else {
-      navigate('/');
-    }
-  };
+  const userToken = localStorage.getItem('userToken');
+  const advertiserToken = localStorage.getItem('token');
+  const userRole = localStorage.getItem('userRole');
+
+  // Not logged in
+  if (!userToken && !advertiserToken) {
+    navigate('/');
+    return;
+  }
+
+  // Admin user
+  if (userRole === 'admin') {
+    navigate('/admin-dashboard');
+    return;
+  }
+
+  // Regular user
+  if (userToken && userRole === 'user') {
+    navigate('/userdashboard');
+    return;
+  }
+
+  // Advertiser
+  if (advertiserToken) {
+    navigate('/advertiser-dashboard');
+    return;
+  }
+
+  // fallback
+  navigate('/');
+};
 
   const toggleDropdown = () => {
     setDropdownVisible((prev) => !prev);

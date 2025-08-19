@@ -18,13 +18,13 @@ function PreviewEventCard({ event }) {
 
       <div className="event-actions">
         {/* Static Heart Icon */}
-        <div className="favorite-button"> //Heart icon
+        <div className="favorite-button"> 
           <i className="fas fa-heart"></i>
           <span>{event.likes || 0}</span> {/* Display the number of likes */}
         </div>
 
         {/* Static Comment Icon */}
-        <div className="comment-button">//comment icon
+        <div className="comment-button">
           <i className="fas fa-comment"></i>
         </div>
       </div>
