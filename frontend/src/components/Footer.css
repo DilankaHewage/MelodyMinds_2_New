@@ -1,5 +1,5 @@
 .footer {
-    background-color: #6a1b9a;
+    background-color: #1976d2;
     color: #ffffff;
     padding: 20px 0;
     text-align: center;
@@ -42,7 +42,7 @@
   }
   
   .footer-section ul li a:hover {
-    color: #d1b3ff;
+    color: #90caf9;
   }
   
   .social-icons a {
@@ -53,5 +53,5 @@
   }
   
   .social-icons a:hover {
-    color: #d1b3ff;
+    color: #90caf9;
   }

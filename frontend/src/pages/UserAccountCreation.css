@@ -21,7 +21,7 @@
 
 
 .create-account-button {
-  background: #6a1b9a;
+  background: #1976d2;
   color: #ffffff;
   padding: 12px 20px;
   font-size: 16px;
@@ -33,7 +33,7 @@
 }
 
 .create-account-button:hover {
-  background: #8e24aa;
+  background: #42a5f5;
 }
 
 .dialog-box {

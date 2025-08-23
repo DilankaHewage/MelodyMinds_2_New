@@ -10,7 +10,7 @@
 /*Height  for steps */
 .advertiser-account-container.step-1{
   height: 90vh; 
-}
+}    
 
 .advertiser-account-container.step-2{
   height: 158vh; 
@@ -34,7 +34,7 @@
 
 /* Styling Next button */
 .next-button {
-  background: #6a1b9a;
+  background: #1976d2;
   color: #ffffff;
   padding: 12px 20px;
   font-size: 16px;
@@ -46,7 +46,7 @@
 }
 
 .next-button:hover {
-  background: #8e24aa;
+  background: #42a5f5;
 }
 
 /*Styling drop down menu*/
@@ -61,7 +61,7 @@
 }
 
 #sex:focus {
-  border-color: #6a1b9a; 
+  border-color: #1976d2; 
 }
 
 #sex option:hover {
@@ -86,7 +86,7 @@
 
 /* Styling the Create Account button */
 .submit-button {
-  background: #6a1b9a;
+  background: #1976d2;
   color: #ffffff;
   padding: 12px 20px;
   font-size: 16px;
@@ -98,7 +98,7 @@
 }
 
 .submit-button:hover {
-  background: #8e24aa;
+  background: #42a5f5;
 }
 
 

@@ -28,7 +28,7 @@ const AdvertiserDashboard = () => {
   };
 
   return (
-    <div className="advertiser-dashboard">
+    <div className="advertiser-dashboard"> 
       <h2 className="dashboard-heading">Advertiser Dashboard</h2>
 
       {/* Events Grid */}

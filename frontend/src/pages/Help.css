@@ -28,7 +28,7 @@
 .help-section h2 {
   font-size: 24px;
   margin-bottom: 10px;
-  color: #5e2d79;
+  color: #1976d2;
 }
 
 .help-section ul {
@@ -42,7 +42,7 @@
 }
 
 .back-home-button {
-  background-color: #6a1b9a;
+  background-color: #1976d2;
   color: white;
   padding: 12px 24px;
   border: none;
@@ -55,5 +55,5 @@
 }
 
 .back-home-button:hover {
-  background-color: #8e24aa;
+  background-color: #42a5f5;
 }
