@@ -8,7 +8,7 @@
 .search-bar {
   display: flex;
   justify-content: center;
-  margin: 20px 0;
+  margin: 10px 0;
 }
 
 .search-bar input {
@@ -281,6 +281,7 @@
   position: absolute;
   white-space: nowrap;
   color: #888;
+  font-size: 17px;
   font-style: italic;
   /* Move across the full input width (right → left) */
   right: 100%;
