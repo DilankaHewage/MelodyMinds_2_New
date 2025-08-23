@@ -102,12 +102,12 @@ nav {
 /* Responsive Design */
 @media (max-width: 768px) {
   .header-container {
-      flex-direction: column;
+      flex-direction: row;
       text-align: center;
   }
 
   .nav-links {
-      flex-direction: column;
+      flex-direction: row;
       gap: 20px;
   }
 
