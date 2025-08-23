@@ -1,34 +1,55 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './EventCard.css';
 
 function AdvertiserEventCard({ event }) {
-  const [showCommentsDialog, setShowCommentsDialog] = useState(false); // State to toggle the comments dialog
+  const [showCommentsDialog, setShowCommentsDialog] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [commentCount, setCommentCount] = useState(0);
 
-  const comments = [
-    'Amazing event! Can’t wait to attend.',
-    'Looking forward to this!',
-    'The lineup looks fantastic!',
-    'This is going to be epic!',
-    'I’ve already got my tickets!',
-  ]; // Predefined comments
+  // Fetch comment count when card loads
+  useEffect(() => {
+    const fetchCommentCount = async () => {
+      try {
+        const { data } = await axios.get(`http://localhost:5000/api/comments/event/${event._id}/count`);
+        setCommentCount(data.count); // <-- backend should return { count: number }
+      } catch (error) {
+        console.error('Error fetching comment count:', error);
+        setCommentCount(0);
+      }
+    };
+    fetchCommentCount();
+  }, [event._id]);
+
+  // Fetch full comments when dialog opens
+  useEffect(() => {
+    if (showCommentsDialog) {
+      const fetchComments = async () => {
+        try {
+          const { data } = await axios.get(`http://localhost:5000/api/comments/event/${event._id}`);
+          setComments(data);
+        } catch (error) {
+          console.error('Error fetching comments:', error);
+          setComments([]);
+        }
+      };
+      fetchComments();
+    }
+  }, [showCommentsDialog, event._id]);
 
   const handleCommentClick = (e) => {
-    e.stopPropagation(); // Prevent triggering the card click
-    setShowCommentsDialog(true); // Open the comments dialog
+    e.stopPropagation();
+    setShowCommentsDialog(true);
   };
 
   const handleCloseDialog = () => {
-    setShowCommentsDialog(false); // Close the comments dialog
+    setShowCommentsDialog(false);
   };
 
   return (
     <div className="event-card-container advertiser-event-card">
       <div className="event-card">
-        <img
-          src={event.poster}
-          alt={event.title}
-          className="event-poster"
-        />
+        <img src={event.poster} alt={event.title} className="event-poster" />
         <div className="event-details">
           <h2>{event.title}</h2>
           <p>Date: {event.date}</p>
@@ -42,7 +63,7 @@ function AdvertiserEventCard({ event }) {
               <i className="fas fa-heart"></i> <span>20</span>
             </button>
             <button className="comment-button" onClick={handleCommentClick}>
-              <i className="fas fa-comment"></i> <span>5</span>
+              <i className="fas fa-comment"></i> <span>{commentCount}</span>
             </button>
           </div>
         </div>
@@ -53,13 +74,17 @@ function AdvertiserEventCard({ event }) {
         <div className="comments-dialog">
           <div className="comments-dialog-content">
             <h2>Comments</h2>
-            <ul className="comments-list">
-              {comments.map((comment, index) => (
-                <li key={index} className="comment-item">
-                  {comment}
-                </li>
-              ))}
-            </ul>
+            {comments.length > 0 ? (
+              <ul className="comments-list">
+                {comments.map((comment) => (
+                  <li key={comment._id} className="comment-item">
+                    <strong>{comment.userName || 'User'}:</strong> {comment.content}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No comments yet.</p>
+            )}
             <button className="close-dialog-button" onClick={handleCloseDialog}>
               Close
             </button>
