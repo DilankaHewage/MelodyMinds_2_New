@@ -113,13 +113,21 @@ const UserDashboard = () => {
 
       {/* Search Bar Section */}
       <div className="search-bar">
-        <input
-          type="text"
-          placeholder="Explore Your Musical World"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+  <div className="input-wrap">
+    <input
+      type="text"
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+    />
+    {!searchTerm && (
+      <div className="placeholder-rail">
+        <span className="placeholder-runner">Explore Your Musical World</span>
       </div>
+    )}
+  </div>
+</div>
+      
+
 
        {/* Filter Section */}
        <div className="filter-section">

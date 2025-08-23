@@ -20,6 +20,7 @@
 
   .event-card:hover {
     transform: scale(1.02); /* Slight zoom effect on hover */
+    background-color: #f6f0f8;
   }
   
   .event-poster {
