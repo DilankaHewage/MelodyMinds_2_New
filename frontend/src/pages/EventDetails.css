@@ -65,12 +65,12 @@
 }
 
 .reaction-button.liked {
-  color: #6a5acd /* Change color when liked */
+  color: #1976d2 /* Change color when liked */
 }
 
 .reaction-button:hover,
 .comment-button:hover {
-  color: #5a4cb0;
+  color: #1976d2;
   transform: scale(1.1);
 }
 

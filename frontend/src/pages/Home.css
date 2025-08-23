@@ -24,8 +24,8 @@
 
 .search-bar input:focus {
   outline: none;
-  border-color: #6a5acd;
-  box-shadow: 0 4px 15px rgba(106, 90, 205, 0.5);
+  border-color: #1976d2;
+  box-shadow: 0 4px 15px rgba(25, 118, 210, 0.5);
 }
 
 .search-bar input::placeholder {
@@ -72,13 +72,13 @@
 
 /* Change placeholder text color for DatePicker */
 .date-picker::placeholder {
-  color: #6a5acd; 
+  color: #1976d2; 
   font-style: italic; 
 
 }
 
 .react-datepicker__input-container input::placeholder {
-  color: #6a5acd; 
+  color: #1976d2; 
   font-style: italic; 
   font-weight:  600; 
   text-align: center;
@@ -89,13 +89,13 @@
 /* Hover effect for the cross button in the date filter */
 .react-datepicker__close-icon::after {
   background-color: #fcfcfc;
-  color: #6a5acd; 
+  color: #1976d2; 
   border-radius: 30px;
-  border: 2px solid #6a5acd;
+  border: 2px solid #1976d2;
 }
 
 .react-datepicker__close-icon:hover::after {
-  background-color:  #6a5acd; 
+  background-color:  #1976d2; 
   color: white; 
   
 }

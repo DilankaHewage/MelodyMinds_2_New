@@ -27,7 +27,7 @@ body {
   font-family: 'Poppins', sans-serif;
   font-size: 24px;
   margin-bottom: 20px;
-  color: #3c1361;
+  color: #1976d2;
 }
 
 .input-group {
@@ -37,7 +37,7 @@ body {
 
 .input-group label {
   font-size: 14px;
-  color: #3c1361;
+  color: #1976d2;
   font-weight: 500;
   display: block;
   margin-bottom: 5px;
@@ -54,13 +54,13 @@ body {
 }
 
 .input-group input:focus {
-  border-color: #6a1b9a;
+  border-color: #1976d2;
   outline: none;
   background-color: #f0f0f0;
 }
 
 .login-button {
-  background: #6a1b9a;
+  background: #1976d2;
   color: #ffffff;
   padding: 12px 20px;
   font-size: 16px;
@@ -72,7 +72,7 @@ body {
 }
 
 .login-button:hover {
-  background: #8e24aa;
+  background: #42a5f5;
 }
 
 .error-message {
@@ -84,17 +84,17 @@ body {
 .advertiser-login-link {
   margin-top: 20px;
   font-size: 14px;
-  color: #6a1b9a;
+  color: #1976d2;
 }
 
 .signup-link a,
 .advertiser-login-link a {
   text-decoration: none;
-  color: #6a1b9a;
+  color: #1976d2;
   font-weight: bold;
 }
 
 .signup-link a:hover,
 .advertiser-login-link a:hover {
-  color: #8e24aa;
+  color: #42a5f5;
 }

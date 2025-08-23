@@ -3,7 +3,7 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: linear-gradient(135deg, #3c1361, #5e2d79);
+    background: linear-gradient(135deg, #1976d2, #42a5f5);
   }
   
   .account-creation-box {
@@ -19,7 +19,7 @@
     font-family: 'Poppins', sans-serif;
     font-size: 24px;
     margin-bottom: 20px;
-    color: #3c1361;
+    color: #1976d2;
   }
   
   .input-group {
@@ -30,7 +30,7 @@
   .input-group label {
     font-size: 14px;
     font-weight: 500;
-    color: #3c1361;
+    color: #1976d2;
   }
   
   .input-group input {
@@ -43,12 +43,12 @@
   }
   
   .input-group input:focus {
-    border-color: #6a1b9a;
+    border-color: #1976d2;
     outline: none;
   }
   
   .submit-button {
-    background: #6a1b9a;
+    background: #1976d2;
     color: #ffffff;
     padding: 12px 20px;
     border-radius: 20px;
@@ -58,6 +58,6 @@
   }
   
   .submit-button:hover {
-    background: #8e24aa;
+    background: #42a5f5;
   }
   
