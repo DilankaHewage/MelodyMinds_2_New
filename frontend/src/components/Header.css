@@ -1,6 +1,6 @@
 /* Header Container */
 header {
-  background: linear-gradient(90deg, #1976d2, #42a5f5, #90caf9); /* Blue gradient */
+  background: linear-gradient(90deg, #3c1361, #5e2d79, #b184c5); /* Dark to light purple gradient */
   padding: 20px 0;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   position: relative;
@@ -70,12 +70,12 @@ nav {
 }
 
 .nav-link-button:hover {
-  color: #90caf9; /* Lighter blue on hover */
+  color: #d1b3ff; /* Lighter purple on hover */
 }
 
 /* Login Button Styling */
 .login-link {
-  background: #1976d2; /* Blue for the button */
+  background: #6a1b9a; /* Dark purple for the button */
   padding: 10px 20px;
   border-radius: 20px;
   color: #ffffff;
@@ -89,14 +89,14 @@ nav {
 }
 
 .login-link:hover {
-  background: #42a5f5; /* Lighter blue on hover */
+  background: #8e24aa; /* Lighter purple on hover */
   color: #ffffff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* Hover Effects for Nav Links */
 .nav-links li a:hover {
-  color: #90caf9; /* Lighter blue on hover */
+  color: #d1b3ff; /* Lighter purple on hover */
 }
 
 /* Responsive Design */
@@ -169,4 +169,3 @@ nav {
 .dropdown-menu {
   animation: fadeIn 0.3s ease-in-out; /* Smooth fade-in animation */
 }
-
