@@ -128,6 +128,11 @@ function Header() {
               </button>
             </li>
             <li>
+              <button className="nav-link-button" onClick={() => navigate('/advertisements')}>
+                Advertisements
+              </button>
+            </li>
+            <li>
               <button className="nav-link-button" onClick={() => navigate('/about')}>
                 About Us
               </button>
@@ -157,6 +162,14 @@ function Header() {
                   >
                     Profile
                   </button>
+                  {advertiserToken && (
+                    <button
+                      className="dropdown-item"
+                      onClick={() => navigate('/advertiser-advertisements')}
+                    >
+                      Manage Advertisements
+                    </button>
+                  )}
                   <button className="dropdown-item" onClick={handleLogout}>
                     Logout
                   </button>
