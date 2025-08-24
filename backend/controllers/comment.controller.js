@@ -1,38 +1,53 @@
 import Comment from '../models/comment.model.js';
-import User from '../models/user.model.js';
+import Event from '../models/event.model.js';
 
-// Create a new comment
-export const createComment = async (req, res) => {
+// Add a comment to an event
+export const addComment = async (req, res) => {
   try {
-    const { content, eventId } = req.body;
-    const userId = req.user.id;
+    const { eventId } = req.params;
+    const { content } = req.body;
+    const userId = req.user._id;
 
-    if (!content || !eventId) {
-      return res.status(400).json({ message: 'Content and event ID are required' });
+    // Check if event exists
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: "Event not found"
+      });
     }
 
-    // Get user name for the comment
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+    // Validate content
+    if (!content || content.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Comment content is required"
+      });
     }
 
-    const comment = new Comment({
-      content,
-      user: userId,
+    // Create new comment
+    const newComment = new Comment({
       event: eventId,
-      userName: user.name
+      user: userId,
+      content: content.trim()
     });
 
-    const savedComment = await comment.save();
-    
+    await newComment.save();
+
     // Populate user info for response
-    await savedComment.populate('user', 'name email');
-    
-    res.status(201).json(savedComment);
+    await newComment.populate('user', 'firstName lastName email');
+
+    res.status(201).json({
+      success: true,
+      message: "Comment added successfully",
+      data: newComment
+    });
   } catch (error) {
-    console.error('Error creating comment:', error);
-    res.status(500).json({ message: 'Failed to create comment' });
+    console.error("Error adding comment:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Server Error"
+    });
   }
 };
 
@@ -40,87 +55,149 @@ export const createComment = async (req, res) => {
 export const getEventComments = async (req, res) => {
   try {
     const { eventId } = req.params;
-    
-    const comments = await Comment.find({ event: eventId })
-      .populate('user', 'name email')
-      .sort({ createdAt: -1 }); // Sort by newest first
-    
-    res.status(200).json(comments);
+
+    // Check if event exists
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: "Event not found"
+      });
+    }
+
+    const comments = await Comment.find({
+      event: eventId,
+      isActive: true
+    })
+    .populate('user', 'firstName lastName email')
+    .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      data: comments
+    });
   } catch (error) {
-    console.error('Error fetching comments:', error);
-    res.status(500).json({ message: 'Failed to fetch comments' });
+    console.error("Error getting event comments:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Server Error"
+    });
   }
 };
 
-// Update a comment
+// Update a comment (only by the user who created it)
 export const updateComment = async (req, res) => {
   try {
     const { commentId } = req.params;
     const { content } = req.body;
-    const userId = req.user.id;
+    const userId = req.user._id;
 
-    if (!content) {
-      return res.status(400).json({ message: 'Content is required' });
-    }
-
+    // Find the comment
     const comment = await Comment.findById(commentId);
-    
     if (!comment) {
-      return res.status(404).json({ message: 'Comment not found' });
+      return res.status(404).json({
+        success: false,
+        message: "Comment not found"
+      });
     }
 
-    // Check if the user owns this comment
-    if (comment.user.toString() !== userId) {
-      return res.status(403).json({ message: 'Not authorized to update this comment' });
+    // Check if user owns this comment
+    if (comment.user.toString() !== userId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only update your own comments"
+      });
     }
 
-    comment.content = content;
-    const updatedComment = await comment.save();
-    
-    await updatedComment.populate('user', 'name email');
-    
-    res.status(200).json(updatedComment);
+    // Validate content
+    if (!content || content.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Comment content is required"
+      });
+    }
+
+    // Update the comment
+    comment.content = content.trim();
+    await comment.save();
+
+    // Populate user info for response
+    await comment.populate('user', 'firstName lastName email');
+
+    res.status(200).json({
+      success: true,
+      message: "Comment updated successfully",
+      data: comment
+    });
   } catch (error) {
-    console.error('Error updating comment:', error);
-    res.status(500).json({ message: 'Failed to update comment' });
+    console.error("Error updating comment:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Server Error"
+    });
   }
 };
 
-// Delete a comment
+// Delete a comment (only by the user who created it)
 export const deleteComment = async (req, res) => {
   try {
     const { commentId } = req.params;
-    const userId = req.user.id;
+    const userId = req.user._id;
 
+    // Find the comment
     const comment = await Comment.findById(commentId);
-    
     if (!comment) {
-      return res.status(404).json({ message: 'Comment not found' });
+      return res.status(404).json({
+        success: false,
+        message: "Comment not found"
+      });
     }
 
-    // Check if the user owns this comment
-    if (comment.user.toString() !== userId) {
-      return res.status(403).json({ message: 'Not authorized to delete this comment' });
+    // Check if user owns this comment
+    if (comment.user.toString() !== userId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only delete your own comments"
+      });
     }
 
-    await Comment.findByIdAndDelete(commentId);
-    
-    res.status(200).json({ message: 'Comment deleted successfully' });
+    // Soft delete - mark as inactive
+    comment.isActive = false;
+    await comment.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Comment deleted successfully"
+    });
   } catch (error) {
-    console.error('Error deleting comment:', error);
-    res.status(500).json({ message: 'Failed to delete comment' });
+    console.error("Error deleting comment:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Server Error"
+    });
   }
 };
 
 // Get comment count for an event
-export const getEventCommentCount = async (req, res) => {
+export const getCommentCount = async (req, res) => {
   try {
     const { eventId } = req.params;
-    const count = await Comment.countDocuments({ event: eventId });
-    res.status(200).json({ count });
+
+    const commentCount = await Comment.countDocuments({
+      event: eventId,
+      isActive: true
+    });
+
+    res.status(200).json({
+      success: true,
+      data: { commentCount }
+    });
   } catch (error) {
-    console.error('Error fetching comment count:', error);
-    res.status(500).json({ message: 'Failed to fetch comment count' });
+    console.error("Error getting comment count:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Server Error"
+    });
   }
 };
 

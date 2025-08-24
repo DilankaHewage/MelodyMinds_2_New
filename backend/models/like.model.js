@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const commentSchema = mongoose.Schema(
+const likeSchema = mongoose.Schema(
   {
     event: {
       type: mongoose.Schema.Types.ObjectId,
@@ -12,11 +12,6 @@ const commentSchema = mongoose.Schema(
       ref: 'User',
       required: true
     },
-    content: {
-      type: String,
-      required: true,
-      trim: true
-    },
     isActive: {
       type: Boolean,
       default: true
@@ -25,6 +20,9 @@ const commentSchema = mongoose.Schema(
   { timestamps: true }
 );
 
-const Comment = mongoose.model('Comment', commentSchema);
+// Ensure a user can only like an event once
+likeSchema.index({ event: 1, user: 1 }, { unique: true });
 
-export default Comment; 
+const Like = mongoose.model('Like', likeSchema);
+
+export default Like;
