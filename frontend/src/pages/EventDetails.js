@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import './EventDetails.css';
 import { FaHeart, FaComment, FaEdit, FaTrash, FaCheck, FaTimes } from 'react-icons/fa';
+import StripeCheckout from '../components/StripeCheckout';
 
 const EventDetails = () => {
   const { id } = useParams(); // Get the event ID from the URL
@@ -23,6 +24,13 @@ const EventDetails = () => {
   const [successMessage, setSuccessMessage] = useState(''); // State to store success message
   const isLoggedIn = !!localStorage.getItem('userToken'); // Check if the user is logged in
   const currentUserId = localStorage.getItem('userId'); // Get current user ID
+
+  // Ticket purchase state
+  const [showTicketModal, setShowTicketModal] = useState(false);
+  const [ticketQuantity, setTicketQuantity] = useState(1);
+  const [availableTickets, setAvailableTickets] = useState(0);
+  const [showStripeCheckout, setShowStripeCheckout] = useState(false);
+  const [userInfo, setUserInfo] = useState(null);
 
   // Fetch comments for the event
   const fetchComments = async () => {
@@ -60,6 +68,7 @@ const EventDetails = () => {
         setNewComment('');
         setSuccessMessage('Comment added successfully!');
         setTimeout(() => setSuccessMessage(''), 3000);
+        fetchComments(); // Refresh comments
       } catch (err) {
         console.error('Error adding comment:', err);
         setErrorMessage('Failed to add comment. Please try again.');
@@ -147,6 +156,120 @@ const EventDetails = () => {
     setIsLiked(!isLiked);
   };
 
+  // Fetch user information
+  const fetchUserInfo = async () => {
+    try {
+      const token = localStorage.getItem('userToken');
+      const userId = localStorage.getItem('userId');
+      
+      if (token && userId) {
+        const { data } = await axios.get(`http://localhost:5000/api/users/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setUserInfo(data);
+      }
+    } catch (error) {
+      console.error('Error fetching user info:', error);
+    }
+  };
+
+  // Ticket purchase functions
+  const handleBuyTicketsClick = async () => {
+    if (!isLoggedIn) {
+      setErrorMessage('You need to log in to buy tickets.');
+      setTimeout(() => setErrorMessage(''), 3000);
+      return;
+    }
+    
+    // Refresh event data to get latest ticket availability
+    try {
+      const { data } = await axios.get(`http://localhost:5000/api/events/${id}`);
+      const latestAvailableTickets = parseInt(data.ticketLink) || 0;
+      
+      if (latestAvailableTickets === 0) {
+        setErrorMessage('Sorry, this event is now sold out.');
+        setTimeout(() => setErrorMessage(''), 3000);
+        return;
+      }
+      
+      setEvent(data);
+      setAvailableTickets(latestAvailableTickets);
+      setTicketQuantity(1);
+      setShowTicketModal(true);
+    } catch (error) {
+      console.error('Error fetching latest event data:', error);
+      setErrorMessage('Failed to load ticket information. Please try again.');
+      setTimeout(() => setErrorMessage(''), 3000);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowTicketModal(false);
+    setShowStripeCheckout(false);
+    setTicketQuantity(1);
+  };
+
+  const handleQuantityChange = (e) => {
+    const value = parseInt(e.target.value);
+    if (value >= 1 && value <= 5 && value <= availableTickets) {
+      setTicketQuantity(value);
+    }
+  };
+
+  const handleProceedToPayment = () => {
+    setShowTicketModal(false);
+    setShowStripeCheckout(true);
+  };
+
+  const handlePaymentSuccess = async (paymentData) => {
+    setSuccessMessage(`Payment successful! You have purchased ${paymentData.tickets} ticket(s).`);
+    setTimeout(() => setSuccessMessage(''), 5000);
+    
+    // Update available tickets locally
+    let newAvailableTickets;
+    if (paymentData.remainingTickets !== undefined) {
+      // Use the remaining tickets count from the backend response
+      newAvailableTickets = paymentData.remainingTickets;
+    } else {
+      // Fallback to local calculation
+      newAvailableTickets = Math.max(0, availableTickets - ticketQuantity);
+    }
+    
+    setAvailableTickets(newAvailableTickets);
+    
+    // Also update the event object to reflect the new ticket count
+    if (event) {
+      setEvent({
+        ...event,
+        ticketLink: newAvailableTickets.toString()
+      });
+    }
+    
+    // Optionally refresh event data from server to ensure accuracy
+    try {
+      const { data } = await axios.get(`http://localhost:5000/api/events/${id}`);
+      setEvent(data);
+      setAvailableTickets(parseInt(data.ticketLink) || 0);
+    } catch (error) {
+      console.error('Error refreshing event data:', error);
+      // Don't show error to user as the payment was successful
+    }
+    
+    handleCloseModal();
+  };
+
+  const handlePaymentError = (errorMessage) => {
+    setErrorMessage(errorMessage);
+    setTimeout(() => setErrorMessage(''), 5000);
+  };
+
+  const getTotalAmount = () => {
+    const pricePerTicket = parseFloat(event.ticketPrice) || 0;
+    return (pricePerTicket * ticketQuantity);
+  };
+
   useEffect(() => {
     const fetchEventDetails = async () => {
       try {
@@ -160,9 +283,23 @@ const EventDetails = () => {
       }
     };
 
+    const fetchCommentsData = async () => {
+      try {
+        const { data } = await axios.get(`http://localhost:5000/api/comments/event/${id}`);
+        setComments(data);
+      } catch (err) {
+        console.error('Error fetching comments:', err);
+      }
+    };
+
     fetchEventDetails();
-    fetchComments(); // Fetch comments when component mounts
-  }, [id]);
+    fetchCommentsData(); // Fetch comments when component mounts
+    
+    // Fetch user info if logged in
+    if (isLoggedIn) {
+      fetchUserInfo();
+    }
+  }, [id, isLoggedIn]);
 
   if (loading) {
     return <p>Loading event details...</p>;
@@ -189,6 +326,85 @@ const EventDetails = () => {
       {successMessage && (
         <div className="success-dialog">
           <p>{successMessage}</p>
+        </div>
+      )}
+
+      {/* Ticket Purchase Modal */}
+      {showTicketModal && (
+        <div className="modal-overlay">
+          <div className="ticket-modal">
+            <div className="modal-header">
+              <h2>Buy Tickets</h2>
+              <button className="close-modal-btn" onClick={handleCloseModal}>×</button>
+            </div>
+            
+            <div className="modal-content">
+              <div className="available-tickets">
+                <p><strong>Available Tickets: {availableTickets}</strong></p>
+              </div>
+              
+              <div className="ticket-selection">
+                <label htmlFor="ticketQuantity">Number of Tickets (Max 5):</label>
+                <select
+                  id="ticketQuantity"
+                  value={ticketQuantity}
+                  onChange={handleQuantityChange}
+                  className="ticket-quantity-select"
+                >
+                  {[...Array(Math.min(5, availableTickets))].map((_, index) => (
+                    <option key={index + 1} value={index + 1}>
+                      {index + 1}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              
+              <div className="price-breakdown">
+                <p><strong>Price per ticket: LKR {event.ticketPrice}</strong></p>
+                <p><strong>Quantity: {ticketQuantity}</strong></p>
+                <div className="total-amount">
+                  <h3>Total Amount: LKR {getTotalAmount().toFixed(2)}</h3>
+                </div>
+              </div>
+              
+              <div className="modal-actions">
+                <button 
+                  className="payment-btn" 
+                  onClick={handleProceedToPayment}
+                  disabled={availableTickets === 0 || ticketQuantity > availableTickets}
+                >
+                  {availableTickets === 0 ? 'Sold Out' : 
+                   ticketQuantity > availableTickets ? 'Not Enough Tickets' : 
+                   'Proceed to Payment'}
+                </button>
+                <button className="cancel-btn" onClick={handleCloseModal}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Stripe Checkout Modal */}
+      {showStripeCheckout && (
+        <div className="modal-overlay">
+          <div className="stripe-modal">
+            <div className="modal-header">
+              <h2>Complete Payment</h2>
+              <button className="close-modal-btn" onClick={handleCloseModal}>×</button>
+            </div>
+            <StripeCheckout
+              eventId={event._id}
+              ticketQuantity={ticketQuantity}
+              totalAmount={getTotalAmount()}
+              currency="LKR"
+              onSuccess={handlePaymentSuccess}
+              onError={handlePaymentError}
+              onCancel={handleCloseModal}
+              userInfo={userInfo}
+            />
+          </div>
         </div>
       )}
 
@@ -313,14 +529,12 @@ const EventDetails = () => {
             <p><strong>Artist:</strong> {event.artist}</p>
             <p><strong>Ticket Prices:</strong> {event.ticketPrice}</p>
             {event.ticketLink && (
-              <a
-                 href="https://www.google.com"
-                 target="_blank"
-                  rel="noopener noreferrer"
-                 className="buy-tickets-link">
-               Buy Tickets
-             </a>
-)}
+              <button
+                onClick={handleBuyTicketsClick}
+                className="buy-tickets-link">
+                Buy Tickets
+              </button>
+            )}
           </div>
         </div>
       </div>
