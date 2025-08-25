@@ -4,6 +4,7 @@
   justify-content: center;
   align-items: flex-start;
   padding: 20px;
+  background: url('/public/images/bg2.jpg') no-repeat center center/cover;
 }
 
 /* Container for the form and preview sections */
@@ -11,8 +12,10 @@
   display: flex;
   justify-content: space-between;
   gap: 20px;
+  height: 140vh;
   width: 100%;
   max-width: 1200px;
+  background-color: transparent;
 }
 
 /* Form container (left side) */
@@ -22,24 +25,24 @@
   padding-left:20px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  background-color: #e7d3e7;
+  background-color: transparent;
 }
 
 /* Form styling */
 .event-form {
   width: 100%;
   max-width: 500px;
-  
-  
+  margin-bottom: 5px;
 }
 
 .event-form .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 
-.event-form .form-group label {
+.form-group label {
   font-weight: bold;
   margin-bottom: 5px;
+  color: #f4f3f3;
 }
 
 .event-form .form-group input,
@@ -51,6 +54,7 @@
   border-radius: 4px;
   font-size: 14px;
   box-sizing: border-box;
+  color: #f4f3f3;
 }
 
 .event-form .form-group textarea {
@@ -89,13 +93,22 @@
   padding: 20px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  background-color: #e7d3e7;
-  height: 1000px;
+  background-color: transparent;
+  height: 134vh;
 }
 
-.event-preview-container h2 {
+.event-preview-container h2, 
+ .event-form-container h2 {
   margin-bottom: 20px;
   text-align: center;
+  color: #ffffff;
+}
+
+.event-preview-container h2{
+  margin-bottom: 100px;
+
+  text-align: center;
+  color: #ffffff;
 }
 
 .event-card {
