@@ -12,6 +12,15 @@ const eventSchema = mongoose.Schema(
     ticketPrice: { type: String, required: true },
     ticketLink: { type: String, required: true },
     poster: { type: String, required: false }, // URL for the event poster
+    advertiser: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Advertiser',
+      required: true
+    },
+    isActive: {
+      type: Boolean,
+      default: true
+    }
   },
   { timestamps: true }
 );

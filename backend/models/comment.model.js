@@ -2,25 +2,24 @@ import mongoose from 'mongoose';
 
 const commentSchema = mongoose.Schema(
   {
-    content: {
-      type: String,
-      required: true,
-      trim: true,
-      maxlength: 500
+    event: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Event',
+      required: true
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true
     },
-    event: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Event',
-      required: true
-    },
-    userName: {
+    content: {
       type: String,
-      required: true
+      required: true,
+      trim: true
+    },
+    isActive: {
+      type: Boolean,
+      default: true
     }
   },
   { timestamps: true }

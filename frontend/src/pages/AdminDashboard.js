@@ -27,7 +27,7 @@ const AdminDashboard = () => {
       // Analytics calculation
       const totalUsers = data.length;
       const totalAdvertisers = data.filter(u => u.role === 'advertiser').length;
-      // For demo, active users = users updated in last 30 days
+      // active users = users updated in last 30 days
       const now = new Date();
       const activeUsers = data.filter(u => u.updatedAt && (now - new Date(u.updatedAt)) < 30 * 24 * 60 * 60 * 1000).length;
       // Highly engaged advertiser: advertiser with most recent update

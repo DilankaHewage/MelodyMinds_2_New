@@ -11,10 +11,20 @@ const AdvertiserDashboard = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const { data } = await axios.get('http://localhost:5000/api/events'); // Fetch all events from the backend
-        const sortedEvents = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        // Get the appropriate token - advertisers use 'token', users use 'userToken'
+        const userToken = localStorage.getItem('userToken');
+        const advertiserToken = localStorage.getItem('token');
+        const token = advertiserToken || userToken; // Use advertiser token if available, otherwise user token
 
-      setEvents(sortedEvents);
+        // Fetch only the advertiser's own events
+        const { data } = await axios.get('http://localhost:5000/api/events/advertiser/my-events', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        
+        const sortedEvents = data.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        setEvents(sortedEvents);
       } catch (error) {
         console.error('Error fetching events:', error);
       }
@@ -28,7 +38,7 @@ const AdvertiserDashboard = () => {
   };
 
   return (
-    <div className="advertiser-dashboard">
+    <div className="advertiser-dashboard"> 
       <h2 className="dashboard-heading">Advertiser Dashboard</h2>
 
       {/* Events Grid */}
