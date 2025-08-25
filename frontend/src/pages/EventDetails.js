@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import './EventDetails.css';
@@ -33,14 +33,14 @@ const EventDetails = () => {
   const [userInfo, setUserInfo] = useState(null);
 
   // Fetch comments for the event
-  const fetchComments = async () => {
+   const fetchComments = useCallback(async () => {
     try {
       const { data } = await axios.get(`http://localhost:5000/api/comments/event/${id}`);
       setComments(data);
     } catch (err) {
       console.error('Error fetching comments:', err);
     }
-  };
+  }, [id]);
 
   // Add a new comment
   const handleAddComment = async () => {
@@ -293,6 +293,7 @@ const EventDetails = () => {
     };
 
     fetchEventDetails();
+
     fetchCommentsData(); // Fetch comments when component mounts
     
     // Fetch user info if logged in
@@ -300,6 +301,7 @@ const EventDetails = () => {
       fetchUserInfo();
     }
   }, [id, isLoggedIn]);
+
 
   if (loading) {
     return <p>Loading event details...</p>;
@@ -314,7 +316,11 @@ const EventDetails = () => {
   }
 
   return (
-    <div className="event-details-page">
+     <div
+    className="event-details-page"
+    style={{ "--event-bg": `url(${event.poster})` }}
+  >
+    <div className="overlay">
       {/* Error Dialog */}
       {errorMessage && (
         <div className="error-dialog">
@@ -409,10 +415,7 @@ const EventDetails = () => {
       )}
 
       {/* Centered Event Title */}
-      <div className="event-title-container">
-        <h1 className="event-title">{event.title}</h1>
-      </div>
-
+ 
       <div className="event-content"> 
         {/* Left Section */}
         <div className="event-left">
@@ -429,7 +432,7 @@ const EventDetails = () => {
               <FaHeart className="icon" /> {reactions}
             </button>
             <button
-              className="comment-button"
+              className="commenting-button"
               onClick={() => setShowComments(!showComments)}
             >
               <FaComment className="icon" /> {comments.length}
@@ -520,6 +523,9 @@ const EventDetails = () => {
 
         {/* Right Section */}
         <div className="event-right">
+          <div className="event-title-container">
+           <h1 className="event-title">{event.title}</h1>
+          </div>
           <div className="event-info">
             <p><strong>Description:</strong> {event.description}</p>
             <p><strong>Date:</strong> {event.date}</p>
@@ -538,6 +544,7 @@ const EventDetails = () => {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };
