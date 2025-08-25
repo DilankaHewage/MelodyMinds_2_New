@@ -13,7 +13,7 @@
     padding: 10px;
     margin: 10px;
     width: 250px;
-    height: 480px; 
+    height: 520px; 
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     line-height: 1.2;
   }
@@ -58,9 +58,9 @@
   .favorite-button {
     display: flex;
     align-items: center;
-    gap: 5px; /* Add spacing between the icon and the count */
+    gap: 5px; 
     background-color: transparent;
-    color:  #6d6161;
+    color: #6d6161; 
     border: none;
     cursor: pointer;
     font-size: 20px;
