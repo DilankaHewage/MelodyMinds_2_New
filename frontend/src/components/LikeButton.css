@@ -1,6 +1,6 @@
 .like-button {
   display: flex;
-  align-items: center;
+ align-self: left;
   gap: 8px;
   padding: 8px 12px;
   border: 1px solid #ddd;

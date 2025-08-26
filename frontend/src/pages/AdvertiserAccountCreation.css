@@ -34,7 +34,7 @@
 
 /* Styling Next button */
 .next-button {
-  background: #1976d2;
+  background: #c319d2;
   color: #ffffff;
   padding: 12px 20px;
   font-size: 16px;
@@ -46,7 +46,7 @@
 }
 
 .next-button:hover {
-  background: #42a5f5;
+  background: #910c9d;
 }
 
 /*Styling drop down menu*/
@@ -86,7 +86,7 @@
 
 /* Styling the Create Account button */
 .submit-button {
-  background: #1976d2;
+  background: #c319d2;
   color: #ffffff;
   padding: 12px 20px;
   font-size: 16px;
@@ -98,7 +98,7 @@
 }
 
 .submit-button:hover {
-  background: #42a5f5;
+  background: #6e0b77;
 }
 
 
