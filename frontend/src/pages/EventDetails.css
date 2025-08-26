@@ -91,13 +91,13 @@
 
 .reaction-button:hover,
 .comment-button:hover {
-  color: #1976d2;
+  color: #c94bdd;
   transform: scale(1.1);
 }
 
 .reaction-button:hover,
 .comment-button:hover {
-  color: #5a4cb0;
+  color: #c862c8;
   transform: scale(1.2);
 }
 
@@ -145,7 +145,7 @@
 
 .add-comment-button {
   padding: 10px 20px;
-  background-color: #6a5acd;
+  background-color: #bf26b5;
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -154,7 +154,7 @@
 }
 
 .add-comment-button:hover {
-  background-color: #5a4cb0;
+  background-color: #610c68;
 }
 
 .event-right {
@@ -177,7 +177,7 @@
 }
 
 .buy-tickets-link:hover {
-  background-color: #2980b9;
+  background-color: #b629b9;
   transform: scale(1.05);
 }
 

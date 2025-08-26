@@ -39,26 +39,40 @@
   
   .event-actions {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    
+    width: 100%;
+    gap: 10px;
   }
   
   .favorite-button,
   .comment-button {
     display: flex;
-    align-items: center;
-    font-size: 18px;
-    color: #333;
-    transition: none;
-  }
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  line-height: 1;
+}
   
+.favorite-button{
+  align-self: flex-start ;
+}
+
+.comment-button{
+  align-self:flex-end ;
+}
   
-.comment-button:hover {
-    color: #333; /* Ensure the color remains the same on hover */
-    transform: none; /* Remove any scaling or hover effects */
-  }
   .favorite-button span {
-    margin-left: 5px;
+    margin-left: 15px;
     font-size: 14px;
   }
-  
+
+  .comment-button span {
+    font-size: 12px;
+    margin-left: 15px;
+  }
