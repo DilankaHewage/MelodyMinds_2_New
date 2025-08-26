@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../config/firebaseConfig";
 import PreviewEventCard from "../components/PreviewEventCard"; // Import Preview Card component
+import AdvertiserPayment from "../components/AdvertiserPayment"; // Import Advertiser Payment component
 import "./AdvertiserEventing.css";
 
 const AdvertiserEventing = () => {
@@ -19,6 +19,8 @@ const AdvertiserEventing = () => {
   });
   const [poster, setPoster] = useState(null);
   const [posterPreview, setPosterPreview] = useState(null); // For previewing the poster
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [posterUrl, setPosterUrl] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,65 +38,61 @@ const AdvertiserEventing = () => {
     e.preventDefault();
 
     try {
-      // Upload poster to Firebase Storage
-      let posterUrl = "";
+      // Upload poster to Firebase Storage first
+      let uploadedPosterUrl = "";
       if (poster) {
         console.log("Uploading poster to Firebase Storage...");
         const storageRef = ref(storage, `event-posters/${Date.now()}-${poster.name}`);
         const snapshot = await uploadBytes(storageRef, poster);
-        posterUrl = await getDownloadURL(snapshot.ref);
-        console.log("Poster uploaded successfully. URL:", posterUrl);
+        uploadedPosterUrl = await getDownloadURL(snapshot.ref);
+        console.log("Poster uploaded successfully. URL:", uploadedPosterUrl);
+        setPosterUrl(uploadedPosterUrl);
       }
 
-      // Send event data to the backend
-      // Get the appropriate token - advertisers use 'token', users use 'userToken'
-      const userToken = localStorage.getItem("userToken");
-      const advertiserToken = localStorage.getItem("token");
-      const token = advertiserToken || userToken; // Use advertiser token if available, otherwise user token
-      
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data", // Ensure correct content type
-        },
-      };
-
-      const formData = new FormData();
-      formData.append("title", eventData.title);
-      formData.append("description", eventData.description);
-      formData.append("date", eventData.date);
-      formData.append("time", eventData.time);
-      formData.append("venue", eventData.venue);
-      formData.append("district", eventData.district);
-      formData.append("artist", eventData.artist);
-      formData.append("ticketPrice", eventData.ticketPrice);
-      formData.append("ticketLink", eventData.ticketLink);
-      formData.append("poster", poster); // Append the file
-
-      console.log("Sending event data to backend...");
-      const response = await axios.post("http://localhost:5000/api/events", formData, config);
-
-      alert("Event created successfully!");
-      console.log("Event created:", response.data);
-
-      // Reset form fields
-      setEventData({
-        title: "",
-        description: "",
-        date: "",
-        time: "",
-        venue: "",
-        district: "",
-        artist: "",
-        ticketPrice: "",
-        ticketLink: "",
-      });
-      setPoster(null);
-      setPosterPreview(null);
+      // Set poster URL in event data and show payment modal
+      setEventData(prev => ({ ...prev, posterUrl: uploadedPosterUrl }));
+      setShowPaymentModal(true);
     } catch (error) {
-      console.error("Error creating event:", error);
-      alert("Failed to create event.");
+      console.error("Error uploading poster:", error);
+      alert("Failed to upload poster. Please try again.");
     }
+  };
+
+  const handlePaymentSuccess = (paymentIntent) => {
+    alert("Payment successful! Your event has been published.");
+    console.log("Payment successful:", paymentIntent);
+
+    // Reset form fields
+    setEventData({
+      title: "",
+      description: "",
+      date: "",
+      time: "",
+      venue: "",
+      district: "",
+      artist: "",
+      ticketPrice: "",
+      ticketLink: "",
+    });
+    setPoster(null);
+    setPosterPreview(null);
+    setPosterUrl(null);
+    setShowPaymentModal(false);
+  };
+
+  const handlePaymentError = (error) => {
+    console.error("Payment failed:", error);
+    alert(`Payment failed: ${error}`);
+  };
+
+  const handlePaymentCancel = () => {
+    setShowPaymentModal(false);
+  };
+
+  // Calculate publication fee (5 times the ticket price)
+  const calculatePublicationFee = () => {
+    const ticketPrice = parseFloat(eventData.ticketPrice) || 0;
+    return ticketPrice * 5;
   };
 
   return (
@@ -149,7 +147,6 @@ const AdvertiserEventing = () => {
         </div>
 
         {/* Right Section: Event Card Preview */}
-     
         <div className="event-preview-container">
           <h2>Event Preview</h2>
           <PreviewEventCard
@@ -166,8 +163,27 @@ const AdvertiserEventing = () => {
               poster: posterPreview || "/images/empty.jpg", // Use preview URL or default image
             }}
           />
+          
+          {/* Display publication fee */}
+          {eventData.ticketPrice && (
+            <div className="publication-fee-info">
+              <p><strong>Publication Fee: Rs. {calculatePublicationFee().toLocaleString()}</strong></p>
+              <small>This is 5 times your ticket price and is required to publish your event.</small>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Payment Modal */}
+      {showPaymentModal && (
+        <AdvertiserPayment
+          amount={calculatePublicationFee()}
+          eventData={{ ...eventData, posterUrl }}
+          onSuccess={handlePaymentSuccess}
+          onError={handlePaymentError}
+          onCancel={handlePaymentCancel}
+        />
+      )}
     </div>
   );
 };
