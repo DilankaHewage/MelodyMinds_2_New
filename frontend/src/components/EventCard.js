@@ -37,7 +37,7 @@ function EventCard({ event }) {
         </div>
         
         {/* Like and Comment Section */}
-        <div className="event-actions">
+        <div className="event-actions" onClick={(e) => e.stopPropagation()}>
           <LikeButton 
             eventId={event._id} 
             initialLikeCount={likeCount}

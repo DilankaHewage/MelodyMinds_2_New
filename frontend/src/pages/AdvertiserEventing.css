@@ -1,6 +1,7 @@
 /* Main container for the page */
 .advertiser-eventing {
   display: flex;
+  height: 160vh;
   justify-content: center;
   align-items: flex-start;
   padding: 20px;
@@ -12,7 +13,7 @@
   display: flex;
   justify-content: space-between;
   gap: 20px;
-  height: 140vh;
+  height: 160vh;
   width: 100%;
   max-width: 1200px;
   background-color: transparent;
@@ -40,9 +41,9 @@
 }
 
 .form-group label {
-  font-weight: bold;
-  margin-bottom: 5px;
-  color: #f4f3f3;
+  font-weight: bold !important;
+  margin-bottom: 5px !important;
+  color: #f4f3f3 !important;
 }
 
 .event-form .form-group input,
@@ -94,7 +95,7 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   background-color: transparent;
-  height: 134vh;
+  height: 154vh;
 }
 
 .event-preview-container h2, 
