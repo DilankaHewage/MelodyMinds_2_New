@@ -20,6 +20,14 @@ const eventSchema = mongoose.Schema(
     isActive: {
       type: Boolean,
       default: true
+    },
+    isPublished: {
+      type: Boolean,
+      default: false
+    },
+    publicationPaymentId: {
+      type: String,
+      required: false
     }
   },
   { timestamps: true }

@@ -88,6 +88,7 @@ export const createPaymentIntent = async (req, res) => {
       user: userId,
       event: eventId,
       advertiser: event.advertiser._id,
+      transactionType: 'ticket_purchase',
       numberOfTickets,
       ticketPrice,
       totalAmount: totalAmount / 100, // Store as actual amount, not cents
@@ -204,6 +205,136 @@ export const getAdvertiserTransactions = async (req, res) => {
     console.error('Error fetching advertiser transactions:', error);
     res.status(500).json({ 
       message: 'Failed to fetch transactions', 
+      error: error.message 
+    });
+  }
+};
+
+// Create Payment Intent for Advertiser Event Publication
+export const createAdvertiserPaymentIntent = async (req, res) => {
+  try {
+    const { amount, eventData } = req.body;
+    const advertiserId = req.user._id;
+
+    // Validate input
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ 
+        message: 'Invalid payment amount' 
+      });
+    }
+
+    if (!eventData || !eventData.title || !eventData.ticketPrice) {
+      return res.status(400).json({ 
+        message: 'Event data is required for publication payment' 
+      });
+    }
+
+    // Fetch advertiser details
+    const advertiser = await Advertiser.findById(advertiserId);
+    if (!advertiser) {
+      return res.status(404).json({ message: 'Advertiser not found' });
+    }
+
+    // Convert amount to cents for Stripe
+    const totalAmountInCents = Math.round(amount * 100);
+
+    // Create payment intent
+    const stripe = getStripe();
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: totalAmountInCents,
+      currency: 'usd', // You can change this based on your requirements
+      metadata: {
+        advertiserId: advertiserId.toString(),
+        eventTitle: eventData.title,
+        eventTicketPrice: eventData.ticketPrice.toString(),
+        paymentType: 'event_publication'
+      }
+    });
+
+    res.status(200).json({
+      client_secret: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id,
+      amount: totalAmountInCents,
+      currency: 'usd'
+    });
+
+  } catch (error) {
+    console.error('Error creating advertiser payment intent:', error);
+    res.status(500).json({ 
+      message: 'Failed to create payment intent', 
+      error: error.message 
+    });
+  }
+};
+
+// Confirm Advertiser Payment and Publish Event
+export const confirmAdvertiserPayment = async (req, res) => {
+  try {
+    const { paymentIntentId, eventData } = req.body;
+    const advertiserId = req.user._id;
+
+    // Retrieve payment intent from Stripe
+    const stripe = getStripe();
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+    
+    if (paymentIntent.status !== 'succeeded') {
+      return res.status(400).json({ 
+        message: 'Payment not successful' 
+      });
+    }
+
+    // Create the event with published status
+    const { title, description, date, time, venue, district, artist, ticketPrice, ticketLink, poster } = eventData;
+    
+    const event = new Event({
+      title,
+      description,
+      date,
+      time,
+      venue,
+      district,
+      artist,
+      ticketPrice,
+      ticketLink,
+      poster: poster || eventData.posterUrl,
+      advertiser: advertiserId,
+      isActive: true,
+      isPublished: true,
+      publicationPaymentId: paymentIntentId
+    });
+
+    const savedEvent = await event.save();
+
+    // Create a transaction record for the publication payment
+    const publicationTransaction = new Transaction({
+      advertiser: advertiserId,
+      event: savedEvent._id,
+      transactionType: 'publication',
+      numberOfTickets: 0, // This is a publication payment, not ticket purchase
+      ticketPrice: parseFloat(ticketPrice),
+      totalAmount: paymentIntent.amount / 100, // Convert from cents
+      currency: paymentIntent.currency.toUpperCase(),
+      stripePaymentIntentId: paymentIntentId,
+      paymentStatus: 'succeeded',
+      customerDetails: {
+        name: req.user.companyName || req.user.name,
+        email: req.user.companyEmail || req.user.email
+      }
+    });
+
+    await publicationTransaction.save();
+
+    res.status(201).json({
+      success: true,
+      message: 'Payment successful and event published',
+      event: savedEvent,
+      transaction: publicationTransaction
+    });
+
+  } catch (error) {
+    console.error('Error confirming advertiser payment:', error);
+    res.status(500).json({ 
+      message: 'Failed to confirm payment and publish event', 
       error: error.message 
     });
   }
