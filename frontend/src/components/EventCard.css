@@ -55,6 +55,13 @@
     align-items: center;
   }
   
+   .event-action {
+    display: flex;
+    flex-direction: row;
+    gap: 1px;
+    justify-content: space-between;
+    
+  }
   
   .comment-bar {
     display: flex;
@@ -155,7 +162,7 @@
 
 .comments-dialog-content {
   background-color: rgb(255, 255, 255);
-  padding: 20px;
+  padding: 1px;
   border-radius: 8px;
   width: 400px;
   max-width: 90%;
