@@ -107,7 +107,7 @@ const CommentSection = ({ eventId, initialCommentCount = 0, onCommentChange }) =
         className="comment-toggle-button"
         onClick={() => setShowComments(!showComments)}
       >
-        💬 Comments ({initialCommentCount})
+        💬 <span>{initialCommentCount} </span>
       </button>
 
       {showComments && (
