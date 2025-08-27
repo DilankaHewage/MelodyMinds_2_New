@@ -47,7 +47,11 @@ const AdvertiserEventing = () => {
       }
 
       // Send event data to the backend
-      const token = localStorage.getItem("userToken");
+      // Get the appropriate token - advertisers use 'token', users use 'userToken'
+      const userToken = localStorage.getItem("userToken");
+      const advertiserToken = localStorage.getItem("token");
+      const token = advertiserToken || userToken; // Use advertiser token if available, otherwise user token
+      
       const config = {
         headers: {
           Authorization: `Bearer ${token}`,

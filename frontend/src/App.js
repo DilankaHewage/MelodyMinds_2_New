@@ -19,6 +19,8 @@ import { useState } from 'react';
 import AdvertiserEventing from './pages/AdvertiserEventing';
 import Help from './pages/Help'; 
 import AdminDashboard from './pages/AdminDashboard';
+import AdvertiserAdvertisementManagement from './pages/AdvertiserAdvertisementManagement';
+import UserAdvertisements from './pages/UserAdvertisements';
 
 
 function App() {
@@ -52,6 +54,15 @@ function App() {
               }
             />
            <Route path="/advertiser-dashboard" element={<AdvertiserDashboard />} />
+           <Route
+             path="/advertiser-advertisements"
+             element={
+               <ProtectedRoute>
+                 <AdvertiserAdvertisementManagement />
+               </ProtectedRoute>
+             }
+           />
+           <Route path="/advertisements" element={<UserAdvertisements />} />
            <Route
              path="/admin-dashboard"
              element={
