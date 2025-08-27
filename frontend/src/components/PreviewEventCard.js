@@ -25,7 +25,7 @@ function PreviewEventCard({ event }) {
 
         {/* Static Comment Icon */}
         <div className="comment-button">
-          <i className="fas fa-comment"></i>
+          <i className="fas fa-comment"> <span>{event.comments || 0}</span></i>
         </div>
       </div>
     </div>

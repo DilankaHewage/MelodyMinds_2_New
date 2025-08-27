@@ -6,14 +6,14 @@
 
 .event-card {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: space-between;
-    border: 1px solid #ccc;
+    border: 1px solid #797272;
     border-radius: 10px;
     padding: 10px;
     margin: 10px;
     width: 250px;
-    height: 480px; 
+    height: 520px; 
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     line-height: 1.2;
   }
@@ -49,59 +49,20 @@
  
   .event-actions {
     display: flex;
+    flex-direction: column;
     gap: 20px;
     justify-content: space-between;
     align-items: center;
   }
   
-  
-  .favorite-button {
+   .event-action {
     display: flex;
-    align-items: center;
-    gap: 5px; /* Add spacing between the icon and the count */
-    background-color: transparent;
-    color:  #6d6161;
-    border: none;
-    cursor: pointer;
-    font-size: 20px;
+    flex-direction: row;
+    gap: 1px;
+    justify-content: space-between;
+    
   }
   
-  
-.favorite-button.liked {
-  color: rgb(218, 74, 206); /* Purple color for liked state */
-}
-  
-  .the-favorite-button i {
-    font-size: 20px;
-    margin-right: 5px;
-    padding: 4px 8px; 
-    transition: color 0.3s ease;
-  }
-  
-  .favorite-button span {
-    font-size: 14px !important; /* Adjust count size */
-    color: #524f4f;
-  }
-  
-  
-  .favorite-button span,
-  .comment-button span {
-    font-size: 20px; /* Ensure both have the same font size */
-  }
-  
-  
-  .comment-button{
-    background: none;
-    padding: 4px 10px;
-  border: none;
-  cursor: pointer;
-  gap : 5px; /* Space between the icon and text inside the button */
-  color: #6d6161; 
-  margin-right: 10px;
-  transition: color 0.3s ease;
-  }
-
- 
   .comment-bar {
     display: flex;
     align-items: center;
@@ -115,14 +76,12 @@
     border-radius: 4px;
     margin-right: 10px;
   }
-  .comment-button i {
-    font-size: 20px; /* Increased font size for the comment icon */
-    transition: transform 0.3s ease; /* Optional: Add a smooth transition effect */
-  }
+
 
   .comment-button span {
-    font-size: 14px; /* Adjust count size */
+    font-size: 19px; /* Adjust count size */
     color: #524f4f;
+    font-weight: 1500 !important;
   }
 
   .the-post-button {
@@ -203,7 +162,7 @@
 
 .comments-dialog-content {
   background-color: rgb(255, 255, 255);
-  padding: 20px;
+  padding: 1px;
   border-radius: 8px;
   width: 400px;
   max-width: 90%;

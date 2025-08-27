@@ -1,9 +1,11 @@
 /* Main container for the page */
 .advertiser-eventing {
   display: flex;
+  height: 160vh;
   justify-content: center;
   align-items: flex-start;
   padding: 20px;
+  background: url('/public/images/bg2.jpg') no-repeat center center/cover;
 }
 
 /* Container for the form and preview sections */
@@ -11,8 +13,10 @@
   display: flex;
   justify-content: space-between;
   gap: 20px;
+  height: 160vh;
   width: 100%;
   max-width: 1200px;
+  background-color: transparent;
 }
 
 /* Form container (left side) */
@@ -22,24 +26,24 @@
   padding-left:20px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  background-color: #e7d3e7;
+  background-color: transparent;
 }
 
 /* Form styling */
 .event-form {
   width: 100%;
   max-width: 500px;
-  
-  
+  margin-bottom: 5px;
 }
 
 .event-form .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 
-.event-form .form-group label {
-  font-weight: bold;
-  margin-bottom: 5px;
+.form-group label {
+  font-weight: bold !important;
+  margin-bottom: 5px !important;
+  color: #f4f3f3 !important;
 }
 
 .event-form .form-group input,
@@ -51,6 +55,7 @@
   border-radius: 4px;
   font-size: 14px;
   box-sizing: border-box;
+  color: #f4f3f3;
 }
 
 .event-form .form-group textarea {
@@ -89,13 +94,46 @@
   padding: 20px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  background-color: #e7d3e7;
-  height: 1000px;
+  background-color: transparent;
+  height: 154vh;
 }
 
-.event-preview-container h2 {
+.event-preview-container h2, 
+ .event-form-container h2 {
   margin-bottom: 20px;
   text-align: center;
+  color: #ffffff;
+}
+
+.event-preview-container h2{
+  margin-bottom: 100px;
+
+  text-align: center;
+  color: #ffffff;
+}
+
+/* Publication fee info styling */
+.publication-fee-info {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 8px;
+  text-align: center;
+  width: 100%;
+  max-width: 300px;
+}
+
+.publication-fee-info p {
+  margin: 0 0 5px 0;
+  color: #856404;
+  font-size: 1.1rem;
+}
+
+.publication-fee-info small {
+  color: #6c757d;
+  font-size: 0.9rem;
+  line-height: 1.3;
 }
 
 .event-card {

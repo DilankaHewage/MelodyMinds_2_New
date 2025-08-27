@@ -1,5 +1,8 @@
-import express from 'express';
+// Load environment variables first
 import dotenv from 'dotenv';
+dotenv.config();
+
+import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors'; // Import CORS
 import userRoutes from './routes/user.route.js';
@@ -8,10 +11,8 @@ import eventRoutes from './routes/event.route.js';
 import commentRoutes from './routes/comment.route.js';
 import likeRoutes from './routes/like.route.js';
 import advertisementRoutes from './routes/advertisement.route.js';
+import transactionRoutes from './routes/transaction.route.js';
 import User from './models/user.model.js';
-
-// Load environment variables
-dotenv.config();
 
 // Initialize express app
 const app = express();
@@ -77,6 +78,7 @@ connectDB().then(async () => {
 app.use('/api/users', userRoutes);
 app.use('/api/advertisers', advertiserRoutes);
 app.use('/api/advertisements', advertisementRoutes);
+app.use('/api/transactions', transactionRoutes);
 
 // Default route
 app.get('/', (req, res) => {
