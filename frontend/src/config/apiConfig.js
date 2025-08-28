@@ -1,19 +1,13 @@
-// API Configuration for different environments
+// Manual switch - change this when you want to deploy
+const USE_PRODUCTION = false; // Set to true when deploying
+
 const API_CONFIG = {
-  // Development (local)
-  development: 'http://localhost:5000',
-  
-  // Production (Railway)
+  local: 'http://localhost:5000',
   production: 'https://melodyminds2new-production.up.railway.app'
 };
 
-// Get current environment
-const isDevelopment = process.env.NODE_ENV === 'development';
+export const API_BASE_URL = USE_PRODUCTION ? API_CONFIG.production : API_CONFIG.local;
 
-// Export the base URL
-export const API_BASE_URL = isDevelopment ? API_CONFIG.development : API_CONFIG.production;
-
-// Helper function to build full API URLs
 export const buildApiUrl = (endpoint) => {
   return `${API_BASE_URL}${endpoint}`;
 };
