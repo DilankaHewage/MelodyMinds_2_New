@@ -1,5 +1,5 @@
 // Manual switch - change this when you want to deploy
-const USE_PRODUCTION = false; // Set to true when deploying
+const USE_PRODUCTION = true; // Set to true when deploying
 
 const API_CONFIG = {
   local: 'http://localhost:5000',
