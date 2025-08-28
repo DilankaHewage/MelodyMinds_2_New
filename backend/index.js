@@ -1,5 +1,8 @@
-import express from 'express';
+// Load environment variables first
 import dotenv from 'dotenv';
+dotenv.config();
+
+import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors'; // Import CORS
 import userRoutes from './routes/user.route.js';
@@ -8,10 +11,9 @@ import eventRoutes from './routes/event.route.js';
 import commentRoutes from './routes/comment.route.js';
 import likeRoutes from './routes/like.route.js';
 import advertisementRoutes from './routes/advertisement.route.js';
+import transactionRoutes from './routes/transaction.route.js';
 import User from './models/user.model.js';
-
-// Load environment variables
-dotenv.config();
+import path from 'path';
 
 // Initialize express app
 const app = express();
@@ -19,39 +21,47 @@ const app = express();
 // Middleware to parse JSON
 app.use(express.json());
 
-// Enable CORS (Cross-Origin Resource Sharing) for frontend communication
-app.use(cors({
-  origin: 'http://localhost:3000', // Change this if your frontend is hosted elsewhere
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  
-  
-}));
+// CORS: allow localhost (dev) and your Vercel domain (prod)
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        'http://localhost:3000',
+        process.env.FRONTEND_URL, // e.g. https://melody-minds-2-new.vercel.app
+      ].filter(Boolean);
 
+      // Allow tools like Postman or server-to-server (no Origin)
+      if (!origin) return callback(null, true);
 
-// Add this line to include event routes
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error('Not allowed by CORS'));
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  })
+);
+
+// Add routes
 app.use('/api/events', eventRoutes);
-
-// Add comment routes
 app.use('/api/comments', commentRoutes);
-
-// Add like routes
 app.use('/api/likes', likeRoutes);
 
 // MongoDB Connection
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI); // Updated to omit deprecated options
-    console.log(`MongoDB Connected: ${conn.connection.host}`); // Log the connection host
+    const conn = await mongoose.connect(process.env.MONGO_URI);
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
     return conn;
   } catch (error) {
-    console.error(`Error: ${error.message}`); // Log the error message
+    console.error(`Error: ${error.message}`);
     process.exit(1);
   }
 };
 
-// Connect to the database
+// Connect to the database and ensure default admin
 connectDB().then(async () => {
-  // Create admin user if not exists
   const adminEmail = process.env.ADMIN_EMAIL;
   const adminPassword = process.env.ADMIN_PASSWORD;
   const adminName = process.env.ADMIN_NAME || 'Admin';
@@ -73,10 +83,14 @@ connectDB().then(async () => {
   }
 });
 
-// Routes
+// API routes
 app.use('/api/users', userRoutes);
 app.use('/api/advertisers', advertiserRoutes);
 app.use('/api/advertisements', advertisementRoutes);
+app.use('/api/transactions', transactionRoutes);
+
+// Serve uploads statically
+app.use('/uploads', express.static(path.join(process.cwd(), 'backend', 'uploads')));
 
 // Default route
 app.get('/', (req, res) => {
@@ -90,4 +104,3 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-

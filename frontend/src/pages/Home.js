@@ -99,6 +99,15 @@ const Home = () => {
       value={searchTerm}
       onChange={(e) => setSearchTerm(e.target.value)}
     />
+    {searchTerm && (
+      <button 
+        className="clear-btn" 
+        onClick={() => setSearchTerm("")}
+      >
+        ×
+      </button>
+    )}
+
     {!searchTerm && (
       <div className="placeholder-rail">
         <span className="placeholder-runner">Explore Your Musical World</span>

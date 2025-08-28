@@ -1,20 +1,21 @@
 .comment-section {
   margin-top: 16px;
-  border-top: 1px solid #eee;
-  padding-top: 16px;
+  padding-top: -36px;
 }
 
 .comment-toggle-button {
-  background: none;
-  border: none;
-  color: #666;
-  cursor: pointer;
-  font-size: 14px;
-  padding: 8px 0;
-  display: flex;
+ display: flex;
   align-items: center;
-  gap: 6px;
-  transition: color 0.2s ease;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  width: 30%;
+  max-height : 40px;
 }
 
 .comment-toggle-button:hover {
@@ -22,11 +23,11 @@
 }
 
 .comments-container {
-  margin-top: 16px;
+  margin-top: 1px;
 }
 
 .comment-form {
-  margin-bottom: 20px;
+  margin-bottom: 1px;
 }
 
 .comment-input {
@@ -38,16 +39,17 @@
   font-family: inherit;
   font-size: 14px;
   margin-bottom: 12px;
+  height :15px;
 }
 
 .comment-input:focus {
   outline: none;
-  border-color: #007bff;
+  border-color: #7a408b;
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
 .comment-submit-btn {
-  background: #007bff;
+  background: #b737aa;
   color: white;
   border: none;
   padding: 8px 16px;
@@ -58,7 +60,7 @@
 }
 
 .comment-submit-btn:hover:not(:disabled) {
-  background: #0056b3;
+  background: #580a5c;
 }
 
 .comment-submit-btn:disabled {

@@ -27,6 +27,7 @@ const UserProfile = () => {
         setFirstName(data.name.split(' ')[0]); // Assuming name is "FirstName LastName"
         setLastName(data.name.split(' ')[1] || '');
         setBio(data.bio || '');
+        if (data.profilePictureUrl) setProfilePicture(data.profilePictureUrl);
       } catch (error) {
         console.error('Error fetching user profile:', error);
       }
@@ -35,9 +36,12 @@ const UserProfile = () => {
     fetchUserProfile();
   }, []);
 
+  const [profileFile, setProfileFile] = useState(null);
+
   const handlePictureChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setProfileFile(file);
       setProfilePicture(URL.createObjectURL(file));
       setShowEditOverlay(false);
     }
@@ -46,18 +50,17 @@ const UserProfile = () => {
   const handleSave = async () => {
     try {
       const token = localStorage.getItem('userToken'); // Get token from localStorage
-      const config = {
+      const formData = new FormData();
+      formData.append('name', `${firstName} ${lastName}`);
+      formData.append('bio', bio);
+      if (profileFile) formData.append('profilePicture', profileFile);
+
+      const { data } = await axios.put('http://localhost:5000/api/users/profile', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
         },
-      };
-
-      const updatedData = {
-        name: `${firstName} ${lastName}`,
-        bio,
-      };
-
-      const { data } = await axios.put('http://localhost:5000/api/users/profile', updatedData, config);
+      });
       console.log('Profile updated:', data);
 
       // Dispatch a custom event to update the header with the new name
@@ -66,6 +69,7 @@ const UserProfile = () => {
 
       // Set the success message and dismiss it after 2 seconds
       setSuccessMessage(data.message || 'Profile updated successfully!');
+      if (data.profilePictureUrl) setProfilePicture(data.profilePictureUrl);
       setTimeout(() => {
         setSuccessMessage(''); // Clear the success message
         navigate('/userdashboard'); // Navigate to the user dashboard

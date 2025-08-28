@@ -52,7 +52,11 @@ const AdvertiserDashboard = () => {
         {/* Render Fetched Events */}
         {events.length > 0 ? (
           events.map((event) => (
-            <AdvertiserEventCard key={event.id} event={event} /> // Render each event using EventCard
+            <AdvertiserEventCard 
+              key={event._id || event.id} 
+              event={event} 
+              onDeleted={(deletedId) => setEvents(prev => prev.filter(e => (e._id || e.id) !== deletedId))}
+            />
           ))
         ) : (
           <p className="no-events-message">No events available</p>

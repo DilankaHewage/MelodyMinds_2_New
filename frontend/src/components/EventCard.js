@@ -8,13 +8,17 @@ function EventCard({ event }) {
   const navigate = useNavigate();
   const [commentCount, setCommentCount] = useState(0);
   const [likeCount, setLikeCount] = useState(event.likeCount || 0);
+  const [showCommentInput, setShowCommentInput] = useState(false);
+  const [newComment, setNewComment] = useState('');
+  const [postingComment, setPostingComment] = useState(false);
 
   // Fetch comment count for this event
   useEffect(() => {
     const fetchCommentCount = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/comments/event/${event._id}/count`);
-        setCommentCount(response.data.count || 0);
+        const response = await axios.get(`http://localhost:5000/api/comments/${event._id}/count`);
+        const count = response.data?.data?.commentCount ?? 0;
+        setCommentCount(count);
       } catch (error) {
         console.error('Error fetching comment count:', error);
         setCommentCount(0);
@@ -33,8 +37,44 @@ function EventCard({ event }) {
   };
 
   const handleCommentClick = (e) => {
-    e.stopPropagation(); // Prevent card click
-    navigate(`/event/${event._id}`); // Navigate to event details to see comments
+    e.stopPropagation();
+    setShowCommentInput((prev) => !prev);
+  };
+
+  const submitComment = async (e) => {
+    e.preventDefault();
+    const userToken = localStorage.getItem('userToken');
+    const advertiserToken = localStorage.getItem('token');
+    const token = userToken || advertiserToken;
+    if (!token) {
+      alert('Please login to comment');
+      return;
+    }
+    if (!newComment.trim()) {
+      return;
+    }
+    setPostingComment(true);
+    try {
+      await axios.post(`http://localhost:5000/api/comments/${event._id}`,
+        { content: newComment.trim() },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setNewComment('');
+      // refresh count
+      try {
+        const response = await axios.get(`http://localhost:5000/api/comments/${event._id}/count`);
+        const count = response.data?.data?.commentCount ?? (commentCount + 1);
+        setCommentCount(count);
+      } catch {
+        setCommentCount((c) => c + 1);
+      }
+      setShowCommentInput(false);
+    } catch (error) {
+      console.error('Error adding comment:', error);
+      alert('Failed to add comment');
+    } finally {
+      setPostingComment(false);
+    }
   };
 
   return (
@@ -54,7 +94,7 @@ function EventCard({ event }) {
         </div>
         
         {/* Like and Comment Section */}
-        <div className="event-actions">
+        <div className="event-action" onClick={(e) => e.stopPropagation()}>
           <LikeButton 
             eventId={event._id} 
             initialLikeCount={likeCount}
@@ -63,11 +103,25 @@ function EventCard({ event }) {
           <button 
             className="comment-button"
             onClick={handleCommentClick}
-            title="View comments"
+            title="Add comment"
           >
             💬 <span>{commentCount}</span>
           </button>
         </div>
+        {showCommentInput && (
+          <form className="comment-inline-form" onSubmit={submitComment} onClick={(e) => e.stopPropagation()}>
+            <input
+              type="text"
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder="Write a comment..."
+              disabled={postingComment}
+            />
+            <button type="submit" disabled={postingComment || !newComment.trim()}>
+              {postingComment ? 'Posting...' : 'Post'}
+            </button>
+          </form>
+        )}
       </div>
     </div>
   );

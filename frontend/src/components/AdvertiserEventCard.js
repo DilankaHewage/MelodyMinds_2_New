@@ -2,23 +2,35 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './EventCard.css';
 
-function AdvertiserEventCard({ event }) {
+function AdvertiserEventCard({ event, onDeleted }) {
   const [showCommentsDialog, setShowCommentsDialog] = useState(false);
   const [comments, setComments] = useState([]);
   const [commentCount, setCommentCount] = useState(0);
+  const [likeCount, setLikeCount] = useState(event.likeCount || 0);
 
   // Fetch comment count when card loads
   useEffect(() => {
     const fetchCommentCount = async () => {
       try {
-        const { data } = await axios.get(`http://localhost:5000/api/comments/event/${event._id}/count`);
-        setCommentCount(data.count); // <-- backend should return { count: number }
+        const { data } = await axios.get(`http://localhost:5000/api/comments/${event._id}/count`);
+        setCommentCount(data?.data?.commentCount ?? 0);
       } catch (error) {
         console.error('Error fetching comment count:', error);
         setCommentCount(0);
       }
     };
+    const fetchLikeCount = async () => {
+      try {
+        const { data } = await axios.get(`http://localhost:5000/api/likes/${event._id}/count`);
+        setLikeCount(data?.data?.likeCount ?? 0);
+      } catch (error) {
+        console.error('Error fetching like count:', error);
+        setLikeCount(0);
+      }
+    };
+
     fetchCommentCount();
+    fetchLikeCount();
   }, [event._id]);
 
   // Fetch full comments when dialog opens
@@ -26,8 +38,8 @@ function AdvertiserEventCard({ event }) {
     if (showCommentsDialog) {
       const fetchComments = async () => {
         try {
-          const { data } = await axios.get(`http://localhost:5000/api/comments/event/${event._id}`);
-          setComments(data);
+          const { data } = await axios.get(`http://localhost:5000/api/comments/${event._id}`);
+          setComments(data?.data || []);
         } catch (error) {
           console.error('Error fetching comments:', error);
           setComments([]);
@@ -46,6 +58,24 @@ function AdvertiserEventCard({ event }) {
     setShowCommentsDialog(false);
   };
 
+  const handleDelete = async () => {
+    const advertiserToken = localStorage.getItem('token');
+    if (!advertiserToken) {
+      alert('Please login as advertiser');
+      return;
+    }
+    if (!window.confirm('Delete this event?')) return;
+    try {
+      await axios.delete(`http://localhost:5000/api/events/${event._id}` , {
+        headers: { Authorization: `Bearer ${advertiserToken}` }
+      });
+      if (onDeleted) onDeleted(event._id);
+    } catch (err) {
+      console.error('Failed to delete event', err);
+      alert(err?.response?.data?.message || 'Failed to delete event');
+    }
+  };
+
   return (
     <div className="event-card-container advertiser-event-card">
       <div className="event-card">
@@ -59,11 +89,14 @@ function AdvertiserEventCard({ event }) {
         </div>
         <div className="event-actions">
           <div className="right-actions">
-            <button className="favorite-button">
-              <i className="fas fa-heart"></i> <span>20</span>
-            </button>
+            <div className="like-static" title="Likes">
+              <i className="fas fa-heart"></i> <span>{likeCount}</span>
+            </div>
             <button className="comment-button" onClick={handleCommentClick}>
               <i className="fas fa-comment"></i> <span>{commentCount}</span>
+            </button>
+            <button className="delete-btn" onClick={handleDelete} title="Delete event">
+              Delete
             </button>
           </div>
         </div>

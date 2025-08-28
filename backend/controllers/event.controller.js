@@ -55,7 +55,7 @@ export const createEvent = async (req, res) => {
 
 export const getAllEvents = async (req, res) => {
   try {
-    const events = await Event.find({ isActive: true }); // Fetch all active events from the database
+    const events = await Event.find({ isActive: true, isPublished: true }); // Fetch only active and published events from the database
     
     // Get like and comment counts for each event
     const eventsWithCounts = await Promise.all(
