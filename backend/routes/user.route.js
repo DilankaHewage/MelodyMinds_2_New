@@ -1,7 +1,7 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/user.model.js';
-import { registerUser, loginUser } from '../controllers/user.controller.js';
+import { registerUser, loginUser, getUserById } from '../controllers/user.controller.js';
 import { protect, adminOnly } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -12,6 +12,9 @@ const router = express.Router();
 // Routes
 router.post('/register', registerUser);
 router.post('/login', loginUser);
+
+// Get user by ID (protected route)
+router.get('/:id', protect, getUserById);
 
 // Protected route to fetch user profile
 router.get('/profile', protect, async (req, res) => {
