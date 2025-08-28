@@ -1,13 +1,8 @@
-// Manual switch - change this when you want to deploy
-const USE_PRODUCTION = true; // Set to true when deploying
+// frontend/src/config/apiConfig.js
 
-const API_CONFIG = {
-  local: 'http://localhost:5000',
-  production: 'https://melodyminds2new-production.up.railway.app'
-};
+// Use an environment variable so dev and prod work without code changes.
+// - Local dev: set REACT_APP_API_URL=http://localhost:5000 in frontend/.env
+// - Vercel: set REACT_APP_API_URL=https://melodyminds2new-production.up.railway.app in Project Settings
+export const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
-export const API_BASE_URL = USE_PRODUCTION ? API_CONFIG.production : API_CONFIG.local;
-
-export const buildApiUrl = (endpoint) => {
-  return `${API_BASE_URL}${endpoint}`;
-};
+export const buildApiUrl = (endpoint) => `${API_BASE_URL}${endpoint}`;
