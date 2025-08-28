@@ -49,9 +49,11 @@
  
   .event-actions {
     display: flex;
+
     flex-direction: row;
     gap: 10px;
     justify-content: flex-end;
+
     align-items: center;
     flex-wrap: nowrap;
   }
@@ -59,9 +61,11 @@
    .event-action {
     display: flex;
     flex-direction: row;
+
     gap: 10px;
     align-items: center;
     flex-wrap: nowrap;
+
   }
   
   .comment-bar {

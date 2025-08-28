@@ -4,7 +4,10 @@ import axios from 'axios';
 import './EventDetails.css';
 import { FaHeart, FaComment, FaEdit, FaTrash, FaCheck, FaTimes } from 'react-icons/fa';
 import StripeCheckout from '../components/StripeCheckout';
+
 import LikeButton from '../components/LikeButton';
+
+
 
 const EventDetails = () => {
   const { id } = useParams(); // Get the event ID from the URL
@@ -33,7 +36,9 @@ const EventDetails = () => {
   const [userInfo, setUserInfo] = useState(null);
 
   // Fetch comments for the event
+
   const fetchComments = useCallback(async () => {
+
     try {
       const { data } = await axios.get(`http://localhost:5000/api/comments/${id}`);
       setComments(data?.data || []);
@@ -276,6 +281,120 @@ const EventDetails = () => {
     return (pricePerTicket * ticketQuantity);
   };
 
+  // Fetch user information
+  const fetchUserInfo = async () => {
+    try {
+      const token = localStorage.getItem('userToken');
+      const userId = localStorage.getItem('userId');
+      
+      if (token && userId) {
+        const { data } = await axios.get(`http://localhost:5000/api/users/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setUserInfo(data);
+      }
+    } catch (error) {
+      console.error('Error fetching user info:', error);
+    }
+  };
+
+  // Ticket purchase functions
+  const handleBuyTicketsClick = async () => {
+    if (!isLoggedIn) {
+      setErrorMessage('You need to log in to buy tickets.');
+      setTimeout(() => setErrorMessage(''), 3000);
+      return;
+    }
+    
+    // Refresh event data to get latest ticket availability
+    try {
+      const { data } = await axios.get(`http://localhost:5000/api/events/${id}`);
+      const latestAvailableTickets = parseInt(data.ticketLink) || 0;
+      
+      if (latestAvailableTickets === 0) {
+        setErrorMessage('Sorry, this event is now sold out.');
+        setTimeout(() => setErrorMessage(''), 3000);
+        return;
+      }
+      
+      setEvent(data);
+      setAvailableTickets(latestAvailableTickets);
+      setTicketQuantity(1);
+      setShowTicketModal(true);
+    } catch (error) {
+      console.error('Error fetching latest event data:', error);
+      setErrorMessage('Failed to load ticket information. Please try again.');
+      setTimeout(() => setErrorMessage(''), 3000);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowTicketModal(false);
+    setShowStripeCheckout(false);
+    setTicketQuantity(1);
+  };
+
+  const handleQuantityChange = (e) => {
+    const value = parseInt(e.target.value);
+    if (value >= 1 && value <= 5 && value <= availableTickets) {
+      setTicketQuantity(value);
+    }
+  };
+
+  const handleProceedToPayment = () => {
+    setShowTicketModal(false);
+    setShowStripeCheckout(true);
+  };
+
+  const handlePaymentSuccess = async (paymentData) => {
+    setSuccessMessage(`Payment successful! You have purchased ${paymentData.tickets} ticket(s).`);
+    setTimeout(() => setSuccessMessage(''), 5000);
+    
+    // Update available tickets locally
+    let newAvailableTickets;
+    if (paymentData.remainingTickets !== undefined) {
+      // Use the remaining tickets count from the backend response
+      newAvailableTickets = paymentData.remainingTickets;
+    } else {
+      // Fallback to local calculation
+      newAvailableTickets = Math.max(0, availableTickets - ticketQuantity);
+    }
+    
+    setAvailableTickets(newAvailableTickets);
+    
+    // Also update the event object to reflect the new ticket count
+    if (event) {
+      setEvent({
+        ...event,
+        ticketLink: newAvailableTickets.toString()
+      });
+    }
+    
+    // Optionally refresh event data from server to ensure accuracy
+    try {
+      const { data } = await axios.get(`http://localhost:5000/api/events/${id}`);
+      setEvent(data);
+      setAvailableTickets(parseInt(data.ticketLink) || 0);
+    } catch (error) {
+      console.error('Error refreshing event data:', error);
+      // Don't show error to user as the payment was successful
+    }
+    
+    handleCloseModal();
+  };
+
+  const handlePaymentError = (errorMessage) => {
+    setErrorMessage(errorMessage);
+    setTimeout(() => setErrorMessage(''), 5000);
+  };
+
+  const getTotalAmount = () => {
+    const pricePerTicket = parseFloat(event.ticketPrice) || 0;
+    return (pricePerTicket * ticketQuantity);
+  };
+
   useEffect(() => {
     const fetchEventDetails = async () => {
       try {
@@ -291,8 +410,10 @@ const EventDetails = () => {
 
     const fetchCommentsData = async () => {
       try {
+
         const { data } = await axios.get(`http://localhost:5000/api/comments/${id}`);
         setComments(data?.data || []);
+
       } catch (err) {
         console.error('Error fetching comments:', err);
       }
@@ -301,7 +422,9 @@ const EventDetails = () => {
     fetchEventDetails();
 
     fetchCommentsData(); // Fetch comments when component mounts
+
     fetchLikeCount();
+
     
     // Fetch user info if logged in
     if (isLoggedIn) {
@@ -438,6 +561,14 @@ const EventDetails = () => {
               onLikeChange={(liked, newCount) => setLikeCount(newCount)}
             />
             <button
+
+              className={`reaction-button ${isLiked ? 'liked' : ''}`}
+              onClick={handleReaction}
+            >
+              <FaHeart className="icon" /> {reactions}
+            </button>
+            <button
+
               className="commenting-button"
               onClick={() => setShowComments(!showComments)}
             >

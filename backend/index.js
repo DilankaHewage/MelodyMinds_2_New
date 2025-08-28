@@ -13,7 +13,9 @@ import likeRoutes from './routes/like.route.js';
 import advertisementRoutes from './routes/advertisement.route.js';
 import transactionRoutes from './routes/transaction.route.js';
 import User from './models/user.model.js';
+
 import path from 'path';
+
 
 // Initialize express app
 const app = express();
@@ -89,8 +91,10 @@ app.use('/api/advertisers', advertiserRoutes);
 app.use('/api/advertisements', advertisementRoutes);
 app.use('/api/transactions', transactionRoutes);
 
+
 // Serve uploads statically
 app.use('/uploads', express.static(path.join(process.cwd(), 'backend', 'uploads')));
+
 
 // Default route
 app.get('/', (req, res) => {
