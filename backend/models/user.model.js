@@ -24,6 +24,10 @@ const userSchema = mongoose.Schema(
       type: String,
       required: false,
     },
+    profilePictureUrl: {
+      type: String,
+      required: false,
+    },
   },
   {
     timestamps: true, // Automatically adds createdAt and updatedAt

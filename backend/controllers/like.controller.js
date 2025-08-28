@@ -16,44 +16,38 @@ export const toggleLike = async (req, res) => {
       });
     }
 
-    // Check if user already liked this event
-    const existingLike = await Like.findOne({
-      event: eventId,
-      user: userId,
-      isActive: true
-    });
+    // Reuse existing like doc if present (active or inactive) to honor unique index
+    let likeDoc = await Like.findOne({ event: eventId, user: userId });
 
-    if (existingLike) {
-      // Unlike - mark as inactive
-      existingLike.isActive = false;
-      await existingLike.save();
-      
-      res.status(200).json({
+    if (likeDoc) {
+      // Toggle state
+      const nextState = !likeDoc.isActive;
+      likeDoc.isActive = nextState;
+      await likeDoc.save();
+
+      return res.status(200).json({
         success: true,
-        message: "Event unliked successfully",
-        liked: false
-      });
-    } else {
-      // Like - create new like
-      const newLike = new Like({
-        event: eventId,
-        user: userId,
-        isActive: true
-      });
-      await newLike.save();
-      
-      res.status(201).json({
-        success: true,
-        message: "Event liked successfully",
-        liked: true
+        message: nextState ? "Event liked successfully" : "Event unliked successfully",
+        liked: nextState
       });
     }
+
+    // No prior like record; create fresh as active
+    likeDoc = new Like({ event: eventId, user: userId, isActive: true });
+    await likeDoc.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Event liked successfully",
+      liked: true
+    });
   } catch (error) {
     console.error("Error toggling like:", error.message);
-    res.status(500).json({
-      success: false,
-      message: "Server Error"
-    });
+    // Handle duplicate key or validation errors gracefully
+    if (error.code === 11000) {
+      return res.status(409).json({ success: false, message: "Like already exists" });
+    }
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 };
 

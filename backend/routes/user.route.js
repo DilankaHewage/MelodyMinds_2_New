@@ -1,5 +1,8 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 import User from '../models/user.model.js';
 import { registerUser, loginUser, getUserById } from '../controllers/user.controller.js';
 import { protect, adminOnly } from '../middleware/authMiddleware.js';
@@ -10,6 +13,7 @@ const router = express.Router();
 
 
 // Routes
+const upload = multer({ storage: multer.memoryStorage() });
 router.post('/register', registerUser);
 router.post('/login', loginUser);
 
@@ -31,6 +35,7 @@ router.get('/profile', protect, async (req, res) => {
       name: user.name,
       email: user.email,
       bio: user.bio || '',
+      profilePictureUrl: user.profilePictureUrl || '',
       events: [], // Add events if needed
     });
   } catch (error) {
@@ -40,7 +45,7 @@ router.get('/profile', protect, async (req, res) => {
 });
 
 // Protected route to update user profile
-router.put('/profile', protect, async (req, res) => {
+router.put('/profile', protect, upload.single('profilePicture'), async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
 
@@ -53,6 +58,16 @@ router.put('/profile', protect, async (req, res) => {
     user.email = req.body.email || user.email;
     user.bio = req.body.bio || user.bio;
 
+    // Handle profile picture upload
+    if (req.file) {
+      const uploadsDir = path.join(process.cwd(), 'backend', 'uploads');
+      if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+      const filename = `userProfile-${Date.now()}-${Math.round(Math.random()*1e9)}${path.extname(req.file.originalname)}`;
+      const filepath = path.join(uploadsDir, filename);
+      fs.writeFileSync(filepath, req.file.buffer);
+      user.profilePictureUrl = `/uploads/${filename}`;
+    }
+
     const updatedUser = await user.save();
 
     res.json({
@@ -61,6 +76,7 @@ router.put('/profile', protect, async (req, res) => {
       name: updatedUser.name,
       email: updatedUser.email,
       bio: updatedUser.bio,
+      profilePictureUrl: updatedUser.profilePictureUrl || '',
     });
   } catch (error) {
     console.error('Error updating user profile:', error);

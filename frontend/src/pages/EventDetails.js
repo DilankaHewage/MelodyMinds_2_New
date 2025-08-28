@@ -5,14 +5,17 @@ import './EventDetails.css';
 import { FaHeart, FaComment, FaEdit, FaTrash, FaCheck, FaTimes } from 'react-icons/fa';
 import StripeCheckout from '../components/StripeCheckout';
 
+import LikeButton from '../components/LikeButton';
+
+
+
 const EventDetails = () => {
   const { id } = useParams(); // Get the event ID from the URL
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const [reactions, setReactions] = useState(20);
-  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
 
   const [comments, setComments] = useState([]); // Initialize with empty array
   const [newComment, setNewComment] = useState(''); // State to store new comment
@@ -33,10 +36,12 @@ const EventDetails = () => {
   const [userInfo, setUserInfo] = useState(null);
 
   // Fetch comments for the event
-   const fetchComments = useCallback(async () => {
+
+  const fetchComments = useCallback(async () => {
+
     try {
-      const { data } = await axios.get(`http://localhost:5000/api/comments/event/${id}`);
-      setComments(data);
+      const { data } = await axios.get(`http://localhost:5000/api/comments/${id}`);
+      setComments(data?.data || []);
     } catch (err) {
       console.error('Error fetching comments:', err);
     }
@@ -53,18 +58,11 @@ const EventDetails = () => {
       try {
         const token = localStorage.getItem('userToken');
         const { data } = await axios.post(
-          'http://localhost:5000/api/comments',
-          {
-            content: newComment,
-            eventId: id
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
+          `http://localhost:5000/api/comments/${id}`,
+          { content: newComment },
+          { headers: { Authorization: `Bearer ${token}` } }
         );
-        setComments([data, ...comments]); // Add new comment to the beginning
+        setComments([data.data, ...comments]); // Add new comment to the beginning
         setNewComment('');
         setSuccessMessage('Comment added successfully!');
         setTimeout(() => setSuccessMessage(''), 3000);
@@ -98,7 +96,7 @@ const EventDetails = () => {
       );
       
       setComments(comments.map(comment => 
-        comment._id === commentId ? data : comment
+        comment._id === commentId ? data.data : comment
       ));
       setEditingComment(null);
       setEditContent('');
@@ -119,41 +117,168 @@ const EventDetails = () => {
 
   // Delete a comment
   const handleDeleteComment = async (commentId) => {
-    if (window.confirm('Are you sure you want to delete this comment?')) {
-      try {
-        const token = localStorage.getItem('userToken');
-        await axios.delete(
-          `http://localhost:5000/api/comments/${commentId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
-        );
-        
-        setComments(comments.filter(comment => comment._id !== commentId));
-        setSuccessMessage('Comment deleted successfully!');
-        setTimeout(() => setSuccessMessage(''), 3000);
-      } catch (err) {
-        console.error('Error deleting comment:', err);
-        setErrorMessage('Failed to delete comment. Please try again.');
-        setTimeout(() => setErrorMessage(''), 3000);
-      }
-    }
-  };
-
-  const handleReaction = () => {
     if (!isLoggedIn) {
-      setErrorMessage('You need to log in to react to this event.');
+      setErrorMessage('You need to log in to delete comments.');
       setTimeout(() => setErrorMessage(''), 3000);
       return;
     }
-    if (isLiked) {
-      setReactions(reactions - 1);
-    } else {
-      setReactions(reactions + 1);
+    if (!window.confirm('Are you sure you want to delete this comment?')) return;
+
+    try {
+      const token = localStorage.getItem('userToken');
+      const response = await axios.delete(
+        `http://localhost:5000/api/comments/${commentId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      if (response.data?.success) {
+        setComments(comments.filter(comment => comment._id !== commentId));
+        setSuccessMessage('Comment deleted successfully!');
+        setTimeout(() => setSuccessMessage(''), 3000);
+      } else {
+        setErrorMessage('You can only delete your own comments.');
+        setTimeout(() => setErrorMessage(''), 3000);
+      }
+    } catch (err) {
+      if (err?.response?.status === 403) {
+        setErrorMessage('You can only delete your own comments.');
+      } else if (err?.response?.status === 401) {
+        setErrorMessage('Please log in again.');
+      } else {
+        setErrorMessage('Failed to delete comment. Please try again.');
+      }
+      console.error('Error deleting comment:', err);
+      setTimeout(() => setErrorMessage(''), 3000);
     }
-    setIsLiked(!isLiked);
+  };
+
+  // Fetch like count for initial render
+  const fetchLikeCount = useCallback(async () => {
+    try {
+      const { data } = await axios.get(`http://localhost:5000/api/likes/${id}/count`);
+      const count = data?.data?.likeCount ?? 0;
+      setLikeCount(count);
+    } catch (err) {
+      console.error('Error fetching like count:', err);
+    }
+  }, [id]);
+
+  // Fetch user information
+  const fetchUserInfo = async () => {
+    try {
+      const token = localStorage.getItem('userToken');
+      const userId = localStorage.getItem('userId');
+      
+      if (token && userId) {
+        const { data } = await axios.get(`http://localhost:5000/api/users/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setUserInfo(data);
+      }
+    } catch (error) {
+      console.error('Error fetching user info:', error);
+    }
+  };
+
+  // Ticket purchase functions
+  const handleBuyTicketsClick = async () => {
+    if (!isLoggedIn) {
+      setErrorMessage('You need to log in to buy tickets.');
+      setTimeout(() => setErrorMessage(''), 3000);
+      return;
+    }
+    
+    // Refresh event data to get latest ticket availability
+    try {
+      const { data } = await axios.get(`http://localhost:5000/api/events/${id}`);
+      const latestAvailableTickets = parseInt(data.ticketLink) || 0;
+      
+      if (latestAvailableTickets === 0) {
+        setErrorMessage('Sorry, this event is now sold out.');
+        setTimeout(() => setErrorMessage(''), 3000);
+        return;
+      }
+      
+      setEvent(data);
+      setAvailableTickets(latestAvailableTickets);
+      setTicketQuantity(1);
+      setShowTicketModal(true);
+    } catch (error) {
+      console.error('Error fetching latest event data:', error);
+      setErrorMessage('Failed to load ticket information. Please try again.');
+      setTimeout(() => setErrorMessage(''), 3000);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowTicketModal(false);
+    setShowStripeCheckout(false);
+    setTicketQuantity(1);
+  };
+
+  const handleQuantityChange = (e) => {
+    const value = parseInt(e.target.value);
+    if (value >= 1 && value <= 5 && value <= availableTickets) {
+      setTicketQuantity(value);
+    }
+  };
+
+  const handleProceedToPayment = () => {
+    setShowTicketModal(false);
+    setShowStripeCheckout(true);
+  };
+
+  const handlePaymentSuccess = async (paymentData) => {
+    setSuccessMessage(`Payment successful! You have purchased ${paymentData.tickets} ticket(s).`);
+    setTimeout(() => setSuccessMessage(''), 5000);
+    
+    // Update available tickets locally
+    let newAvailableTickets;
+    if (paymentData.remainingTickets !== undefined) {
+      // Use the remaining tickets count from the backend response
+      newAvailableTickets = paymentData.remainingTickets;
+    } else {
+      // Fallback to local calculation
+      newAvailableTickets = Math.max(0, availableTickets - ticketQuantity);
+    }
+    
+    setAvailableTickets(newAvailableTickets);
+    
+    // Also update the event object to reflect the new ticket count
+    if (event) {
+      setEvent({
+        ...event,
+        ticketLink: newAvailableTickets.toString()
+      });
+    }
+    
+    // Optionally refresh event data from server to ensure accuracy
+    try {
+      const { data } = await axios.get(`http://localhost:5000/api/events/${id}`);
+      setEvent(data);
+      setAvailableTickets(parseInt(data.ticketLink) || 0);
+    } catch (error) {
+      console.error('Error refreshing event data:', error);
+      // Don't show error to user as the payment was successful
+    }
+    
+    handleCloseModal();
+  };
+
+  const handlePaymentError = (errorMessage) => {
+    setErrorMessage(errorMessage);
+    setTimeout(() => setErrorMessage(''), 5000);
+  };
+
+  const getTotalAmount = () => {
+    const pricePerTicket = parseFloat(event.ticketPrice) || 0;
+    return (pricePerTicket * ticketQuantity);
   };
 
   // Fetch user information
@@ -285,8 +410,10 @@ const EventDetails = () => {
 
     const fetchCommentsData = async () => {
       try {
-        const { data } = await axios.get(`http://localhost:5000/api/comments/event/${id}`);
-        setComments(data);
+
+        const { data } = await axios.get(`http://localhost:5000/api/comments/${id}`);
+        setComments(data?.data || []);
+
       } catch (err) {
         console.error('Error fetching comments:', err);
       }
@@ -295,6 +422,9 @@ const EventDetails = () => {
     fetchEventDetails();
 
     fetchCommentsData(); // Fetch comments when component mounts
+
+    fetchLikeCount();
+
     
     // Fetch user info if logged in
     if (isLoggedIn) {
@@ -425,13 +555,20 @@ const EventDetails = () => {
 
           {/* Interaction Section Below Poster */}
           <div className="interaction-section">
+            <LikeButton
+              eventId={event._id}
+              initialLikeCount={likeCount}
+              onLikeChange={(liked, newCount) => setLikeCount(newCount)}
+            />
             <button
+
               className={`reaction-button ${isLiked ? 'liked' : ''}`}
               onClick={handleReaction}
             >
               <FaHeart className="icon" /> {reactions}
             </button>
             <button
+
               className="commenting-button"
               onClick={() => setShowComments(!showComments)}
             >
@@ -447,12 +584,11 @@ const EventDetails = () => {
                 {comments.map((comment) => (
                   <li key={comment._id} className="comment-item">
                     <div className="comment-header">
-                      <span className="comment-author">{comment.userName}</span>
+                      <span className="comment-author">{comment.user?.firstName} {comment.user?.lastName}</span>
                       <span className="comment-date">
                         {new Date(comment.createdAt).toLocaleDateString()}
                       </span>
                     </div>
-                    {console.log(currentUserId)}
                     {editingComment === comment._id ? (
                       <div className="comment-edit">
                         <input
@@ -479,7 +615,7 @@ const EventDetails = () => {
                     ) : (
                       <div className="comment-content">
                         <p>{comment.content}</p>
-                        {currentUserId === comment.user._id && (
+                        {String(currentUserId) === String(comment.user?._id) && (
                           <div className="comment-actions">
                             <button 
                               onClick={() => handleEditComment(comment)}

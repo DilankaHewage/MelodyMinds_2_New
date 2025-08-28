@@ -49,18 +49,23 @@
  
   .event-actions {
     display: flex;
-    flex-direction: column;
-    gap: 20px;
-    justify-content: space-between;
+
+    flex-direction: row;
+    gap: 10px;
+    justify-content: flex-end;
+
     align-items: center;
+    flex-wrap: nowrap;
   }
   
    .event-action {
     display: flex;
     flex-direction: row;
-    gap: 1px;
-    justify-content: space-between;
-    
+
+    gap: 10px;
+    align-items: center;
+    flex-wrap: nowrap;
+
   }
   
   .comment-bar {
@@ -154,6 +159,29 @@
   .right-actions {
     display: flex;
     gap: 10px;
+  }
+
+  /* Read-only like pill for advertiser cards */
+  .advertiser-event-card .like-static {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border: 1px solid #eed8f5;
+    background: #faf5ff;
+    color: #a445b2;
+    border-radius: 999px;
+    font-size: 14px;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .advertiser-event-card .like-static i {
+    color: #d94fc2;
+  }
+
+  .advertiser-event-card .like-static span {
+    font-weight: 600;
   }
   
 
