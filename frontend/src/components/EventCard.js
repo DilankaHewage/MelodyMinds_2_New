@@ -1,13 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './EventCard.css';
 import LikeButton from './LikeButton';
-import CommentSection from './CommentSection';
 
 function EventCard({ event }) {
   const navigate = useNavigate();
-  const [commentCount, setCommentCount] = useState(event.commentCount || 0);
+  const [commentCount, setCommentCount] = useState(0);
   const [likeCount, setLikeCount] = useState(event.likeCount || 0);
+
+  // Fetch comment count for this event
+  useEffect(() => {
+    const fetchCommentCount = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/comments/event/${event._id}/count`);
+        setCommentCount(response.data.count || 0);
+      } catch (error) {
+        console.error('Error fetching comment count:', error);
+        setCommentCount(0);
+      }
+    };
+
+    fetchCommentCount();
+  }, [event._id]);
 
   const handleCardClick = () => {
     navigate(`/event/${event._id}`); // Navigate to the EventDetails page with the event ID
@@ -17,9 +32,11 @@ function EventCard({ event }) {
     setLikeCount(newCount);
   };
 
-  const handleCommentChange = (newCount) => {
-    setCommentCount(newCount);
+  const handleCommentClick = (e) => {
+    e.stopPropagation(); // Prevent card click
+    navigate(`/event/${event._id}`); // Navigate to event details to see comments
   };
+
   return (
     <div className="event-card-container">
       <div className="event-card" onClick={handleCardClick}>
@@ -43,11 +60,13 @@ function EventCard({ event }) {
             initialLikeCount={likeCount}
             onLikeChange={handleLikeChange}
           />
-          <CommentSection 
-            eventId={event._id} 
-            initialCommentCount={commentCount}
-            onCommentChange={handleCommentChange}
-          />
+          <button 
+            className="comment-button"
+            onClick={handleCommentClick}
+            title="View comments"
+          >
+            💬 <span>{commentCount}</span>
+          </button>
         </div>
       </div>
     </div>

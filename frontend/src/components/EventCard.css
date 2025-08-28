@@ -78,6 +78,24 @@
   }
 
 
+  .comment-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: #524f4f;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background-color 0.2s ease;
+  }
+
+  .comment-button:hover {
+    background-color: #f0f0f0;
+  }
+
   .comment-button span {
     font-size: 19px; /* Adjust count size */
     color: #524f4f;
