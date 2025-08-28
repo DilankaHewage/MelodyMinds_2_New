@@ -20,6 +20,10 @@ const userSchema = mongoose.Schema(
       enum: ['user', 'advertiser', 'admin'],
       default: 'user',
     },
+    bio: {
+      type: String,
+      required: false,
+    },
   },
   {
     timestamps: true, // Automatically adds createdAt and updatedAt

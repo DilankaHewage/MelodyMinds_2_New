@@ -27,6 +27,7 @@ router.get('/profile', protect, async (req, res) => {
       id: user._id,
       name: user.name,
       email: user.email,
+      bio: user.bio || '',
       events: [], // Add events if needed
     });
   } catch (error) {
@@ -52,6 +53,7 @@ router.put('/profile', protect, async (req, res) => {
     const updatedUser = await user.save();
 
     res.json({
+      message: 'Profile updated successfully',
       id: updatedUser._id,
       name: updatedUser.name,
       email: updatedUser.email,

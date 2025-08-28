@@ -4,7 +4,10 @@ import './AdvertiserProfile.css';
 
 const AdvertiserProfile = () => {
   const [profilePicture, setProfilePicture] = useState(null);
+  const [profilePictureFile, setProfilePictureFile] = useState(null);
   const fileInputRef = useRef(null);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
 
   const [personal, setPersonal] = useState({
     firstName: '',
@@ -67,6 +70,7 @@ const AdvertiserProfile = () => {
   const handlePictureChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setProfilePictureFile(file);
       setProfilePicture(URL.createObjectURL(file));
     }
   };
@@ -79,14 +83,70 @@ const AdvertiserProfile = () => {
     }
   };
 
-  const handleSave = () => {
-    console.log({ personal, company, profilePicture });
-    alert('Advertiser profile updated!');
+  const handleSave = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setMessage('Please login to update your profile');
+      return;
+    }
+
+    setLoading(true);
+    setMessage('');
+
+    try {
+      // Create FormData for file upload
+      const formData = new FormData();
+      
+      // Add profile data
+      formData.append('firstName', personal.firstName);
+      formData.append('lastName', personal.lastName);
+      formData.append('nicNumber', personal.nicNumber);
+      formData.append('gender', personal.gender);
+      formData.append('country', personal.country);
+      formData.append('telephone', personal.telephone);
+      formData.append('companyName', company.companyName);
+      formData.append('companyPosition', company.companyPosition);
+      formData.append('companyWebsite', company.companyWebsite);
+      formData.append('companyTelephone', company.companyTelephone);
+
+      // Add profile picture if selected
+      if (profilePictureFile) {
+        formData.append('profilePicture', profilePictureFile);
+      }
+
+      const config = {
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      };
+
+      const response = await axios.put('http://localhost:5000/api/advertisers/profile', formData, config);
+      
+      setMessage('Profile updated successfully!');
+      setProfilePictureFile(null); // Clear the file after successful upload
+      
+      // Update the profile picture URL if a new one was uploaded
+      if (response.data.profilePictureUrl) {
+        setProfilePicture(response.data.profilePictureUrl);
+      }
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+      setMessage(error.response?.data?.message || 'Failed to update profile');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="advertiser-profile">
       <h2>Your Advertiser Profile</h2>
+      
+      {message && (
+        <div className={`message ${message.includes('successfully') ? 'success' : 'error'}`}>
+          {message}
+        </div>
+      )}
       <div className="profile-sections">
         {/* Left Section */}
         <div className="profile-box left">
@@ -154,7 +214,9 @@ const AdvertiserProfile = () => {
         </div>
       </div>
 
-      <button className="save-button" onClick={handleSave}>Update Profile</button>
+      <button className="save-button" onClick={handleSave} disabled={loading}>
+        {loading ? 'Updating...' : 'Update Profile'}
+      </button>
     </div>
   );
 };

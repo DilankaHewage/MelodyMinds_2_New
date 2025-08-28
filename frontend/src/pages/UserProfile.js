@@ -60,16 +60,16 @@ const UserProfile = () => {
       const { data } = await axios.put('http://localhost:5000/api/users/profile', updatedData, config);
       console.log('Profile updated:', data);
 
-      // Dispatch a custom event to update the header
-      const event = new CustomEvent('userNameUpdated', { detail: `${firstName} ${lastName}` });
-      window.dispatchEvent(event);
+      // Dispatch a custom event to update the header with the new name
+      const newFullName = `${firstName} ${lastName}`.trim();
+      window.dispatchEvent(new CustomEvent('userNameUpdated', { detail: newFullName }));
 
-      // Set the success message and dismiss it after 1 second
+      // Set the success message and dismiss it after 2 seconds
       setSuccessMessage(data.message || 'Profile updated successfully!');
       setTimeout(() => {
         setSuccessMessage(''); // Clear the success message
         navigate('/userdashboard'); // Navigate to the user dashboard
-      }, 1000);
+      }, 2000);
     } catch (error) {
       console.error('Error updating profile:', error);
       alert('Failed to update profile.');
@@ -120,6 +120,15 @@ const UserProfile = () => {
         />
       </div>
 
+      <div className="form-group">
+        <label>Bio</label>
+        <textarea
+          value={bio}
+          onChange={(e) => setBio(e.target.value)}
+          rows="4"
+          placeholder="Tell us about yourself..."
+        />
+      </div>
 
       <button className="save-button" onClick={handleSave}>Save</button>
 
