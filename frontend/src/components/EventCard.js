@@ -11,6 +11,8 @@ function EventCard({ event }) {
   const [showCommentInput, setShowCommentInput] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [postingComment, setPostingComment] = useState(false);
+  const [message, setMessage] = useState(null); 
+  const [messageType, setMessageType] = useState(null); 
 
   // Fetch comment count for this event
   useEffect(() => {
@@ -28,6 +30,16 @@ function EventCard({ event }) {
     fetchCommentCount();
   }, [event._id]);
 
+  useEffect(() => {
+  if (message) {
+    const timer = setTimeout(() => {
+      setMessage(null);
+      setMessageType(null);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }
+}, [message]);
+
   const handleCardClick = () => {
     navigate(`/event/${event._id}`); // Navigate to the EventDetails page with the event ID
   };
@@ -39,6 +51,7 @@ function EventCard({ event }) {
   const handleCommentClick = (e) => {
     e.stopPropagation();
     setShowCommentInput((prev) => !prev);
+    setMessage(null);
   };
 
   const submitComment = async (e) => {
@@ -47,10 +60,13 @@ function EventCard({ event }) {
     const advertiserToken = localStorage.getItem('token');
     const token = userToken || advertiserToken;
     if (!token) {
-      alert('Please login to comment');
+      setMessage(" Please login to comment");
+      setMessageType("error");
       return;
     }
     if (!newComment.trim()) {
+      setMessage("Comment cannot be empty");
+      setMessageType("error");
       return;
     }
     setPostingComment(true);
@@ -60,6 +76,8 @@ function EventCard({ event }) {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setNewComment('');
+      setMessage("Comment added successfully!");
+      setMessageType("success");
       // refresh count
       try {
         const response = await axios.get(`http://localhost:5000/api/comments/${event._id}/count`);
@@ -71,7 +89,8 @@ function EventCard({ event }) {
       setShowCommentInput(false);
     } catch (error) {
       console.error('Error adding comment:', error);
-      alert('Failed to add comment');
+      setMessage(" Failed to add comment. Try again.");
+      setMessageType("error");
     } finally {
       setPostingComment(false);
     }
@@ -79,6 +98,13 @@ function EventCard({ event }) {
 
   return (
     <div className="event-card-container">
+
+{message && (
+      <div className={`global-message ${messageType}`}>
+        {message}
+      </div>
+    )}
+
       <div className="event-card" onClick={handleCardClick}>
         <img
           src={event.poster}
@@ -122,6 +148,7 @@ function EventCard({ event }) {
             </button>
           </form>
         )}
+        
       </div>
     </div>
   );
