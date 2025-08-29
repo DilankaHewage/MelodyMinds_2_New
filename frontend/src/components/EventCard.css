@@ -164,11 +164,11 @@
   .advertiser-event-card .like-static {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 20px;
     padding: 6px 10px;
     border: 1px solid #eed8f5;
     background: #faf5ff;
-    color: #a445b2;
+    color: #171617;
     border-radius: 999px;
     font-size: 14px;
     line-height: 1;
