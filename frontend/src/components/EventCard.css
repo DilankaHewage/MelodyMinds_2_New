@@ -264,3 +264,16 @@
   background-color: #aaa;
   cursor: not-allowed;
 }
+.deleting-btn {
+  background-color: #651a6c; 
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+.deleting-btn:hover {
+  background-color: #880b79; 
+}

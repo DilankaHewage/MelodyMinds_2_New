@@ -95,7 +95,7 @@ function AdvertiserEventCard({ event, onDeleted }) {
             <button className="comment-button" onClick={handleCommentClick}>
               <i className="fas fa-comment"></i> <span>{commentCount}</span>
             </button>
-            <button className="delete-btn" onClick={handleDelete} title="Delete event">
+            <button className="deleting-btn" onClick={handleDelete} title="Delete event">
               Delete
             </button>
           </div>
