@@ -119,28 +119,7 @@
     background-color:#6a1b9a;
   }
 
-  .error-message {
-    color: red;
-    font-size: 0.9rem;
-    margin-bottom: 5px;
-  }
-
-  .error-dialog {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #f8d7da;
-    color: #721c24;
-    padding: 10px 20px;
-    border: 1px solid #f5c6cb;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-    font-size: 1rem;
-    text-align: center;
-  }
-
+  
   .delete-icon-container {
     cursor: pointer;
     display: flex;
@@ -280,4 +259,33 @@
 
 .deleting-btn:hover {
   background-color: #880b79; 
+}
+
+.global-message {
+  position: fixed;
+  top: 20px;              /* distance from top */
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 36px 48px;
+  border-radius: 8px;
+  font-size: 16px;
+  z-index: 9999;
+  opacity: 0.05;
+  animation: fadeOut 2s forwards;
+}
+
+.global-message.success {
+  background-color: #9cea9e; /* green */
+  color: rgb(27, 116, 17);
+}
+
+.global-message.error {
+  background-color: #f8b8b3; /* red */
+  color: rgb(134, 35, 35);
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; }
 }
