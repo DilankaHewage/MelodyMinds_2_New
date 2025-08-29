@@ -176,7 +176,8 @@
   }
 
   .advertiser-event-card .like-static i {
-    color: #d94fc2;
+    color: #2d2b2d;
+    font-size: 16px;
   }
 
   .advertiser-event-card .like-static span {
