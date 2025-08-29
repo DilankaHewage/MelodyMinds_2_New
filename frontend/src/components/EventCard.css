@@ -181,7 +181,10 @@
   }
 
   .advertiser-event-card .like-static span {
-    font-weight: 600;
+    font-weight: 500;
+    font-family: 'calibri', sans-serif;
+    font-size: 16px;
+
   }
   
 
