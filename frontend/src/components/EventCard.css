@@ -240,3 +240,28 @@
 .close-dialog-button:hover {
   background-color: #512161;
 }
+
+.comment-inline-form{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.posting-button {
+  background-color: #c868e0; 
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+.posting-button:hover {
+  background-color: #8e248c; /* Darker green */
+}
+
+.posting-button:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+}
