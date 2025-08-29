@@ -117,7 +117,7 @@ function EventCard({ event }) {
               placeholder="Write a comment..."
               disabled={postingComment}
             />
-            <button type="submit" disabled={postingComment || !newComment.trim()}>
+            <button className="posting-button" type="submit" disabled={postingComment || !newComment.trim()}>
               {postingComment ? 'Posting...' : 'Post'}
             </button>
           </form>
