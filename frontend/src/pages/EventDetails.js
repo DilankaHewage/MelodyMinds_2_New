@@ -12,8 +12,7 @@ const EventDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const [reactions, setReactions] = useState(20);
-  const [isLiked, setIsLiked] = useState(false);
+
 
   const [likeCount, setLikeCount] = useState(0);
 
@@ -149,20 +148,7 @@ const EventDetails = () => {
     }
   }, [id]);
 
-  const handleReaction = () => {
-    if (!isLoggedIn) {
-      setErrorMessage('You need to log in to react to this event.');
-      setTimeout(() => setErrorMessage(''), 3000);
-      return;
-    }
-    if (isLiked) {
-      setReactions(reactions - 1);
-    } else {
-      setReactions(reactions + 1);
-    }
-    setIsLiked(!isLiked);
-  };
-
+  
   // User info
   const fetchUserInfo = async () => {
     try {
@@ -400,12 +386,7 @@ const EventDetails = () => {
                 initialLikeCount={likeCount}
                 onLikeChange={(liked, newCount) => setLikeCount(newCount)}
               />
-              <button
-                className={`reaction-button ${isLiked ? 'liked' : ''}`}
-                onClick={handleReaction}
-              >
-                <FaHeart className="icon" /> {reactions}
-              </button>
+              
               <button
                 className="commenting-button"
                 onClick={() => setShowComments(!showComments)}
