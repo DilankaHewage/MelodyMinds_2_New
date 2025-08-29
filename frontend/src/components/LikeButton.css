@@ -20,6 +20,7 @@
 .like-button:hover {
   background: #f8f9fa;
   border-color: #ccc;
+  transition: scale(1.2);
 }
 
 .like-button.liked {
@@ -30,6 +31,7 @@
 
 .like-button.liked:hover {
   background: #ffcccc;
+  transform: scale(1.1);
 }
 
 .like-button.loading {
@@ -43,7 +45,6 @@
 }
 
 .like-count {
-  font-weight: 500;
   min-width: 20px;
   text-align: center;
 }

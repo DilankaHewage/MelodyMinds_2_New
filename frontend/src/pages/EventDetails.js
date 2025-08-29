@@ -6,6 +6,7 @@ import { FaHeart, FaComment, FaEdit, FaTrash, FaCheck, FaTimes } from 'react-ico
 import StripeCheckout from '../components/StripeCheckout';
 import LikeButton from '../components/LikeButton';
 
+
 const EventDetails = () => {
   const { id } = useParams();
   const [event, setEvent] = useState(null);

@@ -72,37 +72,31 @@
   
 }
 
-.reaction-button,
+
 .commenting-button {
-  background-color: transparent;
-  border: none;
-  color:  #cbbecb; 
-  font-size: 16px;
+  background-color: white;
+  border-color: none;
+  border-radius: 20px;
+  color:  #5b585b; 
+  font-size: 15px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 5px; /* Space between the icon and text inside the button */
+  gap: 18px; /* Space between the icon and text inside the button */
   transition: color 0.3s ease, transform 0.2s ease;
+  padding: 10px 15px;
 }
 
-.reaction-button.liked {
-  color: #1976d2 /* Change color when liked */
-}
 
-.reaction-button:hover,
-.comment-button:hover {
+.commenting-button:hover {
   color: #c94bdd;
   transform: scale(1.1);
 }
 
-.reaction-button:hover,
-.comment-button:hover {
-  color: #c862c8;
-  transform: scale(1.2);
-}
 
 .icon {
-  font-size: 25px;
+  font-size: 18px;
+  color: rgb(177, 172, 172);
 }
 
 .comment-section {
@@ -114,7 +108,7 @@
   font-size: 24px;
   margin-bottom: 15px;
   text-align: center;
-  color: #faf7f7;
+  color: #dfc8e1;
 }
 
 .comment-list {
@@ -125,13 +119,14 @@
 
 .comment-item {
   background-color: #f1f1f1;
-  padding: 10px;
+  padding: 10px 25px;
   margin-bottom: 10px;
-  border-radius: 5px;
+  border-radius: 25px;
 }
 
 .add-comment {
   display: flex;
+  border-radius: 20px;
   gap: 10px;
 }
 

@@ -173,11 +173,6 @@ function Header() {
               </button>
             </li>
             <li>
-              <button className="nav-link-button" onClick={() => navigate('/advertisements')}>
-                Advertisements
-              </button>
-            </li>
-            <li>
               <button className="nav-link-button" onClick={async () => {
                 await refreshUserName();
                 navigate('/about');
