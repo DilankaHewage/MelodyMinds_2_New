@@ -97,8 +97,7 @@ const AdminDashboard = () => {
         <ul>
           <li className={activeSection === 'user-management' ? 'active' : ''} onClick={() => setActiveSection('user-management')}>User Management</li>
           <li className={activeSection === 'user-dashboard' ? 'active' : ''} onClick={() => setActiveSection('user-dashboard')}>User Dashboard</li>
-          <li className={activeSection === 'advertiser-dashboard' ? 'active' : ''} onClick={() => setActiveSection('advertiser-dashboard')}>Advertiser Dashboard</li>
-        </ul>
+              </ul>
       </aside>
       <main className="admin-main">
         {activeSection === 'user-management' && (
@@ -122,10 +121,7 @@ const AdminDashboard = () => {
                 <p>{analytics.topAdvertiser ? analytics.topAdvertiser.name : 'N/A'}</p>
               </div>
             </div>
-            <div className="charts-section">
-              {/* Placeholder for charts, e.g., pie/bar charts for analytics */}
-              <div className="chart-placeholder">[Charts will be here]</div>
-            </div>
+            
             {error && <div className="error-message">{error}</div>}
             {loading ? (
               <p>Loading users...</p>
@@ -187,7 +183,7 @@ const AdminDashboard = () => {
                         ) : (
                           <>
                             <button onClick={() => handleEdit(user)}>Edit</button>
-                            <button onClick={() => handleDelete(user._id)}>Delete</button>
+                            
                           </>
                         )}
                       </td>
