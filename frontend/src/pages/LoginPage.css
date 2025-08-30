@@ -1,7 +1,7 @@
 /* Styles for the LoginPage */
 body {
   font-family: 'Arial', sans-serif;
-  background-color: #f3f4f6;
+  background-color: #f6f3f6;
   margin: 0;
   padding: 0;
 }
@@ -15,7 +15,7 @@ body {
 }
 
 .login-box {
-  background: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
+  background: rgba(245, 213, 237, 0.9) !important; /* Semi-transparent background */
   padding: 40px;
   width: 300px;
   border-radius: 10px;
