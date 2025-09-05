@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import './UserProfile.css';
@@ -6,17 +6,24 @@ import './UserProfile.css';
 const UserProfile = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [bio, setBio] = useState('');
-  const [profilePicture, setProfilePicture] = useState(null);
-  const [showEditOverlay, setShowEditOverlay] = useState(false);
+ 
   const [successMessage, setSuccessMessage] = useState(''); // State for success message
-  const fileInputRef = useRef(null);
+
   const navigate = useNavigate(); // Initialize navigate
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         const token = localStorage.getItem('userToken'); // Get token from localStorage
+        const storedUserName = localStorage.getItem('userName'); // Get username from localStorage
+        
+        // First try to get name from localStorage (set during login)
+        if (storedUserName) {
+          const nameParts = storedUserName.split(' ');
+          setFirstName(nameParts[0] || '');
+          setLastName(nameParts.slice(1).join(' ') || '');
+        }
+        
         const config = {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -26,8 +33,8 @@ const UserProfile = () => {
         const { data } = await axios.get('http://localhost:5000/api/users/profile', config);
         setFirstName(data.name.split(' ')[0]); // Assuming name is "FirstName LastName"
         setLastName(data.name.split(' ')[1] || '');
-        setBio(data.bio || '');
-        if (data.profilePictureUrl) setProfilePicture(data.profilePictureUrl);
+       
+       
       } catch (error) {
         console.error('Error fetching user profile:', error);
       }
@@ -36,24 +43,13 @@ const UserProfile = () => {
     fetchUserProfile();
   }, []);
 
-  const [profileFile, setProfileFile] = useState(null);
-
-  const handlePictureChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setProfileFile(file);
-      setProfilePicture(URL.createObjectURL(file));
-      setShowEditOverlay(false);
-    }
-  };
-
   const handleSave = async () => {
     try {
       const token = localStorage.getItem('userToken'); // Get token from localStorage
       const formData = new FormData();
       formData.append('name', `${firstName} ${lastName}`);
-      formData.append('bio', bio);
-      if (profileFile) formData.append('profilePicture', profileFile);
+   
+      
 
       const { data } = await axios.put('http://localhost:5000/api/users/profile', formData, {
         headers: {
@@ -65,11 +61,11 @@ const UserProfile = () => {
 
       // Dispatch a custom event to update the header with the new name
       const newFullName = `${firstName} ${lastName}`.trim();
+      localStorage.setItem('userName', newFullName); // Update userName in localStorage
       window.dispatchEvent(new CustomEvent('userNameUpdated', { detail: newFullName }));
 
       // Set the success message and dismiss it after 2 seconds
       setSuccessMessage(data.message || 'Profile updated successfully!');
-      if (data.profilePictureUrl) setProfilePicture(data.profilePictureUrl);
       setTimeout(() => {
         setSuccessMessage(''); // Clear the success message
         navigate('/userdashboard'); // Navigate to the user dashboard
@@ -81,30 +77,10 @@ const UserProfile = () => {
   };
 
   return (
+    <div className="profile-container">
     <div className="user-profile">
       <h2>User Profile</h2>
-      <div
-        className="profile-picture-section"
-        onClick={() => setShowEditOverlay(true)}
-      >
-        {profilePicture ? (
-          <img src={profilePicture} alt="Profile" className="profile-pic" />
-        ) : (
-          <div className="placeholder-pic">No Picture</div>
-        )}
-        {showEditOverlay && (
-          <div className="edit-overlay">
-            <button onClick={() => fileInputRef.current.click()}>Edit</button>
-            <input
-              type="file"
-              accept="image/*"
-              ref={fileInputRef}
-              onChange={handlePictureChange}
-              style={{ display: 'none' }}
-            />
-          </div>
-        )}
-      </div>
+      
 
       <div className="form-group">
         <label>First Name</label>
@@ -123,17 +99,10 @@ const UserProfile = () => {
           onChange={(e) => setLastName(e.target.value)}
         />
       </div>
-
-      <div className="form-group">
-        <label>Bio</label>
-        <textarea
-          value={bio}
-          onChange={(e) => setBio(e.target.value)}
-          rows="4"
-          placeholder="Tell us about yourself..."
-        />
+      <div className="info-note">
+        <p>Want to be a Advertiser? Email us at admin@gmail.com </p>
+      
       </div>
-
       <button className="save-button" onClick={handleSave}>Save</button>
 
       {/* Success Message Alert */}
@@ -142,6 +111,7 @@ const UserProfile = () => {
           {successMessage}
         </div>
       )}
+    </div>
     </div>
   );
 };

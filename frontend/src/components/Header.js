@@ -41,7 +41,14 @@ function Header() {
     const fetchUserName = async () => {
       try {
         if (userToken) {
-          // Fetch user profile
+          // First try to get userName from localStorage (set during login)
+          const storedUserName = localStorage.getItem('userName');
+          if (storedUserName) {
+            setUserName(storedUserName);
+            return;
+          }
+          
+          // If not in localStorage, fetch user profile
           const config = {
             headers: { Authorization: `Bearer ${userToken}` },
           };

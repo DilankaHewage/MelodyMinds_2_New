@@ -32,6 +32,13 @@ const UserDashboard = () => {
     const fetchUserName = async () => {
       const token = localStorage.getItem('userToken'); // Check if the user is logged in
       if (token) {
+        // First try to get userName from localStorage (set during login)
+        const storedUserName = localStorage.getItem('userName');
+        if (storedUserName) {
+          setUserName(storedUserName);
+          return;
+        }
+        
         try {
           const config = {
             headers: {

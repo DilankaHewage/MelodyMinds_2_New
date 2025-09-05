@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import './AdvertiserProfile.css';
+import { useNavigate } from 'react-router-dom';
+
 
 const AdvertiserProfile = () => {
   const [profilePicture, setProfilePicture] = useState(null);
@@ -8,6 +10,7 @@ const AdvertiserProfile = () => {
   const fileInputRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const [personal, setPersonal] = useState({
     firstName: '',
@@ -124,6 +127,11 @@ const AdvertiserProfile = () => {
       const response = await axios.put('http://localhost:5000/api/advertisers/profile', formData, config);
       
       setMessage('Profile updated successfully!');
+      const newFullName = `${personal.firstName} ${personal.lastName}`.trim();
+      window.dispatchEvent(new CustomEvent('userNameUpdated', { detail: newFullName }));
+      setTimeout(() => {
+        navigate('/advertiser-dashboard');
+      }, 2000);
       setProfilePictureFile(null); // Clear the file after successful upload
       
       // Update the profile picture URL if a new one was uploaded
@@ -139,6 +147,7 @@ const AdvertiserProfile = () => {
   };
 
   return (
+    <div className='advertiser-profile-container'>
     <div className="advertiser-profile">
       <h2>Your Advertiser Profile</h2>
       
@@ -150,20 +159,6 @@ const AdvertiserProfile = () => {
       <div className="profile-sections">
         {/* Left Section */}
         <div className="profile-box left">
-          <div className="profile-picture" onClick={() => fileInputRef.current.click()}>
-            {profilePicture ? (
-              <img src={profilePicture} alt="Profile" />
-            ) : (
-              <div className="placeholder">Upload Picture</div>
-            )}
-            <input
-              type="file"
-              accept="image/*"
-              ref={fileInputRef}
-              onChange={handlePictureChange}
-              style={{ display: 'none' }}
-            />
-          </div>
 
           {[
             { label: 'First Name', key: 'firstName' },
@@ -183,10 +178,18 @@ const AdvertiserProfile = () => {
                 </select>
               ) : (
                 <input
-                  type="text"
-                  value={personal[key]}
-                  onChange={(e) => handleChange('personal', key, e.target.value)}
+                   type="text"
+                    value={personal[key]}
+                   readOnly={key === 'nicNumber'}
+                    onClick={() => {
+                    if (key === 'nicNumber') {
+                      setMessage("You can't edit your NIC number. Contact admin for changes. admin@gmail.com");
+                      setTimeout(() => setMessage(''), 3000); // Clear message after 3s
+              }
+              }}
+          onChange={(e) => handleChange('personal', key, e.target.value)}
                 />
+
               )}
             </div>
           ))}
@@ -218,8 +221,8 @@ const AdvertiserProfile = () => {
         {loading ? 'Updating...' : 'Update Profile'}
       </button>
     </div>
+    </div>
   );
 };
 
 export default AdvertiserProfile;
-// AdvertiserProfile.css
