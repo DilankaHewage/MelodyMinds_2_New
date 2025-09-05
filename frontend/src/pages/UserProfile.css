@@ -1,8 +1,13 @@
+.profile-container {
+    background: url('/public/images/bg1.jpg') no-repeat center center/cover;
+    padding: 1px;
+  }
+
 .user-profile {
     max-width: 500px;
     margin: 40px auto;
     padding: 30px;
-    background-color: #dbcee2;
+    background-color: #b78acf;
     border-radius: 15px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -86,8 +91,8 @@
     top: 10%;
     left: 50%;
     transform: translateX(-50%);
-    background-color: #f8d7da;
-    color: #721c24;
+    background-color: #c1edc7;
+    color: #09130b;
     padding: 20px 40px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -95,4 +100,11 @@
     z-index: 1000;
     animation: fadeOut 1s ease-in-out forwards;
     text-align: center;
+  }
+
+  .info-note {
+    color: #12100a;
+    
+    text-align: center;
+    font-size: 16px;
   }
