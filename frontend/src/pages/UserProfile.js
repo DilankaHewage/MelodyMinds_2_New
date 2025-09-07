@@ -1,117 +1,216 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 import './UserProfile.css';
+import PurchaseHistory from '../components/PurchaseHistory';
 
-const UserProfile = () => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
- 
-  const [successMessage, setSuccessMessage] = useState(''); // State for success message
-
-  const navigate = useNavigate(); // Initialize navigate
+const UserProfile = ({ userName, setUserName }) => {
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('profile');
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    bio: '',
+    profilePicture: null
+  });
 
   useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const token = localStorage.getItem('userToken'); // Get token from localStorage
-        const storedUserName = localStorage.getItem('userName'); // Get username from localStorage
-        
-        // First try to get name from localStorage (set during login)
-        if (storedUserName) {
-          const nameParts = storedUserName.split(' ');
-          setFirstName(nameParts[0] || '');
-          setLastName(nameParts.slice(1).join(' ') || '');
-        }
-        
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        };
-
-        const { data } = await axios.get('http://localhost:5000/api/users/profile', config);
-        setFirstName(data.name.split(' ')[0]); // Assuming name is "FirstName LastName"
-        setLastName(data.name.split(' ')[1] || '');
-       
-       
-      } catch (error) {
-        console.error('Error fetching user profile:', error);
-      }
-    };
-
     fetchUserProfile();
   }, []);
 
-  const handleSave = async () => {
+  const fetchUserProfile = async () => {
     try {
-      const token = localStorage.getItem('userToken'); // Get token from localStorage
-      const formData = new FormData();
-      formData.append('name', `${firstName} ${lastName}`);
-   
+      const token = localStorage.getItem('userToken');
+      console.log('Token from localStorage:', token ? 'Token exists' : 'No token');
       
-
-      const { data } = await axios.put('http://localhost:5000/api/users/profile', formData, {
+      if (!token) {
+        setError('No authentication token found. Please login again.');
+        setLoading(false);
+        return;
+      }
+  
+      console.log('Making request to profile endpoint...');
+      const response = await axios.get('http://localhost:5000/api/users/profile', {
         headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data'
-        },
+          Authorization: `Bearer ${token}`
+        }
       });
-      console.log('Profile updated:', data);
-
-      // Dispatch a custom event to update the header with the new name
-      const newFullName = `${firstName} ${lastName}`.trim();
-      localStorage.setItem('userName', newFullName); // Update userName in localStorage
-      window.dispatchEvent(new CustomEvent('userNameUpdated', { detail: newFullName }));
-
-      // Set the success message and dismiss it after 2 seconds
-      setSuccessMessage(data.message || 'Profile updated successfully!');
-      setTimeout(() => {
-        setSuccessMessage(''); // Clear the success message
-        navigate('/userdashboard'); // Navigate to the user dashboard
-      }, 2000);
+      
+      console.log('Profile response:', response.data);
+      setUser(response.data);
+      setFormData({
+        name: response.data.name || '',
+        email: response.data.email || '',
+        bio: response.data.bio || '',
+        profilePicture: null
+      });
     } catch (error) {
-      console.error('Error updating profile:', error);
-      alert('Failed to update profile.');
+      console.error('=== FRONTEND PROFILE ERROR ===');
+      console.error('Error fetching user profile:', error);
+      console.error('Error response:', error.response?.data);
+      console.error('Error status:', error.response?.status);
+      console.error('Error message:', error.message);
+      console.error('=== END FRONTEND ERROR ===');
+      
+      const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
+      setError(`Failed to load profile: ${errorMessage}`);
+    } finally {
+      setLoading(false);
     }
   };
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleFileChange = (e) => {
+    setFormData(prev => ({
+      ...prev,
+      profilePicture: e.target.files[0]
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem('userToken');
+      const formDataToSend = new FormData();
+      formDataToSend.append('name', formData.name);
+      formDataToSend.append('email', formData.email);
+      formDataToSend.append('bio', formData.bio);
+      if (formData.profilePicture) {
+        formDataToSend.append('profilePicture', formData.profilePicture);
+      }
+
+      const response = await axios.put('http://localhost:5000/api/users/profile', formDataToSend, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      setUser(response.data);
+      setUserName(response.data.name);
+      alert('Profile updated successfully!');
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      alert('Failed to update profile');
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('userToken');
+    localStorage.removeItem('userName');
+    setUserName('');
+    navigate('/'); // Use navigate instead of window.location.href
+  };
+
+  if (loading) {
+    return <div className="user-profile-container">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="user-profile-container">Error: {error}</div>;
+  }
+
   return (
-    <div className="profile-container">
-    <div className="user-profile">
-      <h2>User Profile</h2>
-      
-
-      <div className="form-group">
-        <label>First Name</label>
-        <input
-          type="text"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-        />
-      </div>
-
-      <div className="form-group">
-        <label>Last Name</label>
-        <input
-          type="text"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-        />
-      </div>
-      <div className="info-note">
-        <p>Want to be a Advertiser? Email us at admin@gmail.com </p>
-      
-      </div>
-      <button className="save-button" onClick={handleSave}>Save</button>
-
-      {/* Success Message Alert */}
-      {successMessage && (
-        <div className="success-alert">
-          {successMessage}
+    <div className="user-profile-container">
+      <div className="profile-header">
+        <h1>User Profile</h1>
+        <div className="user-info">
+          <span>Welcome, {userName}</span>
         </div>
-      )}
-    </div>
+      </div>
+
+      <div className="profile-tabs">
+        <button 
+          className={`tab-button ${activeTab === 'profile' ? 'active' : ''}`}
+          onClick={() => setActiveTab('profile')}
+        >
+          Profile
+        </button>
+        <button 
+          className={`tab-button ${activeTab === 'purchase-history' ? 'active' : ''}`}
+          onClick={() => setActiveTab('purchase-history')}
+        >
+          Purchase History
+        </button>
+        <button 
+          className="tab-button logout-button"
+          onClick={handleLogout}
+        >
+          Logout
+        </button>
+      </div>
+
+      <div className="tab-content">
+        {activeTab === 'profile' && (
+          <div className="profile-form-container">
+            <form onSubmit={handleSubmit} className="profile-form">
+              <div className="form-group">
+                <label htmlFor="name">Name</label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="email">Email</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="bio">Bio</label>
+                <textarea
+                  id="bio"
+                  name="bio"
+                  value={formData.bio}
+                  onChange={handleInputChange}
+                  rows="4"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="profilePicture">Profile Picture</label>
+                <input
+                  type="file"
+                  id="profilePicture"
+                  name="profilePicture"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                />
+              </div>
+
+              <button type="submit" className="submit-button">
+                Update Profile
+              </button>
+            </form>
+          </div>
+        )}
+
+        {activeTab === 'purchase-history' && (
+          <PurchaseHistory />
+        )}
+      </div>
     </div>
   );
 };

@@ -10,37 +10,50 @@ import { protect, adminOnly } from '../middleware/authMiddleware.js';
 const router = express.Router();
 
 // Middleware to protect routes
-
+const upload = multer({ storage: multer.memoryStorage() });
 
 // Routes
-const upload = multer({ storage: multer.memoryStorage() });
 router.post('/register', registerUser);
 router.post('/login', loginUser);
 
-// Get user by ID (protected route)
-router.get('/:id', protect, getUserById);
-
+// IMPORTANT: Put specific routes BEFORE parameterized routes
 // Protected route to fetch user profile
 router.get('/profile', protect, async (req, res) => {
   try {
+    console.log('=== PROFILE REQUEST DEBUG ===');
+    console.log('User ID from token:', req.user.id);
+    console.log('User object:', req.user);
+    
     // Fetch user details using the user ID from the token
-    const user = await User.findById(req.user.id).select('-password'); // Exclude password
+    const user = await User.findById(req.user.id).select('-password');
+    console.log('User found in database:', user ? 'Yes' : 'No');
+    
     if (!user) {
+      console.log('User not found in database for ID:', req.user.id);
       return res.status(404).json({ message: 'User not found' });
     }
 
     // Return only the necessary fields
-    res.json({
+    const profileData = {
       id: user._id,
       name: user.name,
       email: user.email,
       bio: user.bio || '',
       profilePictureUrl: user.profilePictureUrl || '',
       events: [], // Add events if needed
-    });
+    };
+    
+    console.log('Profile data to send:', profileData);
+    console.log('=== END PROFILE DEBUG ===');
+    
+    res.json(profileData);
   } catch (error) {
+    console.error('=== PROFILE ERROR ===');
     console.error('Error fetching user profile:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    console.error('=== END PROFILE ERROR ===');
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
@@ -93,6 +106,9 @@ router.get('/', protect, adminOnly, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+// Get user by ID (protected route) - PUT THIS AFTER SPECIFIC ROUTES
+router.get('/:id', protect, getUserById);
 
 // Admin-only: Delete a user
 router.delete('/:id', protect, adminOnly, async (req, res) => {

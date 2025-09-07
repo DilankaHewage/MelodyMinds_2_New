@@ -1,110 +1,130 @@
-.profile-container {
-    background: url('/public/images/bg1.jpg') no-repeat center center/cover;
-    padding: 1px;
-  }
+.user-profile-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
 
-.user-profile {
-    max-width: 500px;
-    margin: 40px auto;
-    padding: 30px;
-    background-color: #b78acf;
-    border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
-  
-  .user-profile h2 {
-    text-align: center;
-    margin-bottom: 25px;
-    color: #333333;
-  }
-  
-  .profile-picture-section {
-    text-align: center;
-    margin-bottom: 25px;
-  }
-  
-  .profile-pic {
-    width: 120px;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 50%;
-    border: 3px solid #984caf;
-    margin-bottom: 10px;
-  }
-  
-  .placeholder-pic {
-    width: 120px;
-    height: 120px;
-    background-color: #e0e0e0;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    color: #1b1a1a;
-    border: 3px dashed #bbb;
-    margin-bottom: 10px;
-  }
-  
-  input[type="file"] {
-    margin-top: 10px;
-  }
-  
-  .form-group {
-    margin-bottom: 20px;
-  }
-  
-  .form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    color: #444444;
-  }
-  
-  .form-group input,
-  .form-group textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #cccccc;
-    border-radius: 8px;
-    font-size: 15px;
-  }
-  
-  .save-button {
-    background: #6a1b9a;
-    color: #ffffff;
-    padding: 12px 20px;
-    font-size: 16px;
-    border-radius: 20px;
-    border: none;
-    width: 100%;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .save-button:hover {
-    background: #8e24aa;
-  }  
-  .success-alert {
-    position: fixed;
-    top: 10%;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #c1edc7;
-    color: #09130b;
-    padding: 20px 40px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    font-size: 16px;
-    z-index: 1000;
-    animation: fadeOut 1s ease-in-out forwards;
-    text-align: center;
-  }
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #eee;
+}
 
-  .info-note {
-    color: #12100a;
-    
-    text-align: center;
-    font-size: 16px;
+.profile-header h1 {
+  color: #333;
+  margin: 0;
+}
+
+.user-info {
+  color: #666;
+  font-size: 16px;
+}
+
+.profile-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+  border-bottom: 1px solid #ddd;
+}
+
+.tab-button {
+  padding: 10px 20px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #666;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.tab-button:hover {
+  color: #007bff;
+  background-color: #f8f9fa;
+}
+
+.tab-button.active {
+  color: #007bff;
+  border-bottom-color: #007bff;
+}
+
+.logout-button {
+  color: #dc3545 !important;
+  margin-left: auto;
+}
+
+.logout-button:hover {
+  color: #c82333 !important;
+  background-color: #f8d7da;
+}
+
+.tab-content {
+  min-height: 400px;
+}
+
+.profile-form-container {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #333;
+}
+
+.form-group input,
+.form-group textarea {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.submit-button {
+  padding: 12px 24px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+  background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .profile-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
   }
+  
+  .profile-tabs {
+    flex-wrap: wrap;
+  }
+}
