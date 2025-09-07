@@ -60,6 +60,9 @@ export const sendReceiptEmail = async (receiptData) => {
     console.log('Receipt email sent successfully');
   } catch (error) {
     console.error('Error sending receipt email:', error);
+    if (error.response) {
+    console.error(error.response.body);
+  }
     throw error;
   }
 };
