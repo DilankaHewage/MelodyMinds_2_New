@@ -3,6 +3,7 @@ import Transaction from '../models/transaction.model.js';
 import Event from '../models/event.model.js';
 import User from '../models/user.model.js';
 import Advertiser from '../models/advertiser.model.js';
+import { generateReceiptId, sendReceiptEmail } from '../services/emailService.js';
 
 // Initialize Stripe with your secret key (lazy initialization)
 const getStripe = () => {
@@ -128,16 +129,20 @@ export const confirmPayment = async (req, res) => {
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
     
     // Update transaction status based on payment intent status
-    const transaction = await Transaction.findById(transactionId).populate('event');
+    const transaction = await Transaction.findById(transactionId).populate('event user');
     if (!transaction) {
       return res.status(404).json({ message: 'Transaction not found' });
     }
 
     transaction.paymentStatus = paymentIntent.status;
-    await transaction.save();
-
-    // If payment succeeded, update available tickets in the event
+    
+    // If payment succeeded, generate receipt and send email
     if (paymentIntent.status === 'succeeded') {
+      // Generate receipt ID
+      const receiptId = generateReceiptId();
+      transaction.receiptId = receiptId;
+      
+      // Update available tickets in the event
       const event = await Event.findById(transaction.event._id);
       if (event) {
         const currentAvailableTickets = parseInt(event.ticketLink) || 0;
@@ -148,7 +153,28 @@ export const confirmPayment = async (req, res) => {
         
         console.log(`Updated event ${event._id} tickets from ${currentAvailableTickets} to ${newAvailableTickets}`);
       }
+
+      // Send receipt email
+      try {
+        await sendReceiptEmail({
+          receiptId,
+          userEmail: transaction.customerDetails.email,
+          userName: transaction.customerDetails.name,
+          numberOfTickets: transaction.numberOfTickets,
+          totalAmount: transaction.totalAmount,
+          currency: transaction.currency,
+          eventName: transaction.event.title,
+          eventDate: transaction.event.date,
+          eventTime: transaction.event.time,
+          eventVenue: transaction.event.venue
+        });
+      } catch (emailError) {
+        console.error('Failed to send receipt email:', emailError);
+        // Don't fail the transaction if email fails
+      }
     }
+
+    await transaction.save();
 
     res.status(200).json({
       success: true,
@@ -185,6 +211,34 @@ export const getUserTransactions = async (req, res) => {
     console.error('Error fetching transactions:', error);
     res.status(500).json({ 
       message: 'Failed to fetch transactions', 
+      error: error.message 
+    });
+  }
+};
+
+// Get user's purchase history
+export const getUserPurchaseHistory = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    
+    const transactions = await Transaction.find({ 
+      user: userId,
+      transactionType: 'ticket_purchase',
+      paymentStatus: 'succeeded'
+    })
+      .populate('event', 'title date time venue district poster')
+      .populate('advertiser', 'companyName')
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      data: transactions
+    });
+  } catch (error) {
+    console.error('Error fetching purchase history:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Failed to fetch purchase history', 
       error: error.message 
     });
   }

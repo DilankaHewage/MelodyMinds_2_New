@@ -5,7 +5,6 @@ const transactionSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: function() {
-      // User is required only for ticket purchases, not for publication payments
       return this.transactionType !== 'publication';
     }
   },
@@ -27,16 +26,13 @@ const transactionSchema = new mongoose.Schema({
   numberOfTickets: {
     type: Number,
     required: function() {
-      // numberOfTickets is required only for ticket purchases
       return this.transactionType === 'ticket_purchase';
     },
     validate: {
       validator: function(value) {
-        // For publication payments, any value is valid
         if (this.transactionType === 'publication') {
           return true;
         }
-        // For ticket purchases, value must be between 1 and 5
         return value >= 1 && value <= 5;
       },
       message: function(props) {
@@ -78,6 +74,11 @@ const transactionSchema = new mongoose.Schema({
   customerDetails: {
     name: String,
     email: String
+  },
+  receiptId: {
+    type: String,
+    unique: true,
+    sparse: true
   }
 }, {
   timestamps: true
