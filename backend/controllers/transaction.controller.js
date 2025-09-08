@@ -1,3 +1,5 @@
+// transaction.controller.js
+
 import Stripe from 'stripe';
 import Transaction from '../models/transaction.model.js';
 import Event from '../models/event.model.js';
@@ -13,7 +15,9 @@ const getStripe = () => {
   return new Stripe(process.env.STRIPE_SECRET_KEY);
 };
 
-// Create Payment Intent
+// ------------------------------
+// Create Payment Intent (Ticket Purchase)
+// ------------------------------
 export const createPaymentIntent = async (req, res) => {
   try {
     const { eventId, numberOfTickets, currency = 'usd' } = req.body;
@@ -21,8 +25,8 @@ export const createPaymentIntent = async (req, res) => {
 
     // Validate input
     if (!eventId || !numberOfTickets || numberOfTickets < 1 || numberOfTickets > 5) {
-      return res.status(400).json({ 
-        message: 'Invalid input. Number of tickets must be between 1 and 5.' 
+      return res.status(400).json({
+        message: 'Invalid input. Number of tickets must be between 1 and 5.'
       });
     }
 
@@ -32,16 +36,9 @@ export const createPaymentIntent = async (req, res) => {
       return res.status(404).json({ message: 'Event not found' });
     }
 
-    console.log('Event found:', {
-      eventId: event._id,
-      title: event.title,
-      advertiser: event.advertiser
-    });
-
-    // Check if advertiser exists
     if (!event.advertiser) {
-      return res.status(400).json({ 
-        message: 'Event advertiser not found. Please contact support.' 
+      return res.status(400).json({
+        message: 'Event advertiser not found. Please contact support.'
       });
     }
 
@@ -54,22 +51,17 @@ export const createPaymentIntent = async (req, res) => {
     // Calculate total amount
     const ticketPrice = parseFloat(event.ticketPrice);
     const availableTickets = parseInt(event.ticketLink) || 0;
-    
-    // Check if enough tickets are available
+
     if (numberOfTickets > availableTickets) {
-      return res.status(400).json({ 
-        message: `Only ${availableTickets} tickets are available. You requested ${numberOfTickets} tickets.` 
+      return res.status(400).json({
+        message: `Only ${availableTickets} tickets are available. You requested ${numberOfTickets} tickets.`
       });
     }
-    
+
     let totalAmount = ticketPrice * numberOfTickets;
-    
-    // Convert to smallest currency unit (cents for USD, cents for LKR)
-    if (currency.toLowerCase() === 'usd') {
-      totalAmount = Math.round(totalAmount * 100); // Convert to cents
-    } else if (currency.toLowerCase() === 'lkr') {
-      totalAmount = Math.round(totalAmount * 100); // Convert to cents equivalent
-    }
+
+    // Convert to smallest unit (Stripe expects cents)
+    totalAmount = Math.round(totalAmount * 100);
 
     // Create payment intent
     const stripe = getStripe();
@@ -92,9 +84,10 @@ export const createPaymentIntent = async (req, res) => {
       transactionType: 'ticket_purchase',
       numberOfTickets,
       ticketPrice,
-      totalAmount: totalAmount / 100, // Store as actual amount, not cents
+      totalAmount: totalAmount / 100, // store actual amount
       currency: currency.toUpperCase(),
       stripePaymentIntentId: paymentIntent.id,
+      paymentStatus: 'pending',
       customerDetails: {
         name: user.name,
         email: user.email
@@ -111,47 +104,46 @@ export const createPaymentIntent = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error creating payment intent:', error);
-    res.status(500).json({ 
-      message: 'Failed to create payment intent', 
-      error: error.message 
+    console.error('❌ Error creating payment intent:', error);
+    res.status(500).json({
+      message: 'Failed to create payment intent',
+      error: error.message
     });
   }
 };
 
-// Confirm Payment
+// ------------------------------
+// Confirm Ticket Purchase Payment
+// ------------------------------
 export const confirmPayment = async (req, res) => {
   try {
     const { paymentIntentId, transactionId } = req.body;
 
-    // Retrieve payment intent from Stripe
+    // Retrieve payment intent
     const stripe = getStripe();
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-    
-    // Update transaction status based on payment intent status
+
+    // Find transaction
     const transaction = await Transaction.findById(transactionId).populate('event user');
     if (!transaction) {
       return res.status(404).json({ message: 'Transaction not found' });
     }
 
     transaction.paymentStatus = paymentIntent.status;
-    
-    // If payment succeeded, generate receipt and send email
+
     if (paymentIntent.status === 'succeeded') {
       // Generate receipt ID
       const receiptId = generateReceiptId();
       transaction.receiptId = receiptId;
-      
-      // Update available tickets in the event
+
+      // Update event tickets
       const event = await Event.findById(transaction.event._id);
       if (event) {
         const currentAvailableTickets = parseInt(event.ticketLink) || 0;
         const newAvailableTickets = Math.max(0, currentAvailableTickets - transaction.numberOfTickets);
-        
         event.ticketLink = newAvailableTickets.toString();
         await event.save();
-        
-        console.log(`Updated event ${event._id} tickets from ${currentAvailableTickets} to ${newAvailableTickets}`);
+        console.log(`✅ Updated event ${event._id} tickets: ${currentAvailableTickets} → ${newAvailableTickets}`);
       }
 
       // Send receipt email
@@ -169,8 +161,7 @@ export const confirmPayment = async (req, res) => {
           eventVenue: transaction.event.venue
         });
       } catch (emailError) {
-        console.error('Failed to send receipt email:', emailError);
-        // Don't fail the transaction if email fails
+        console.error('⚠️ Failed to send receipt email:', emailError);
       }
     }
 
@@ -179,28 +170,25 @@ export const confirmPayment = async (req, res) => {
     res.status(200).json({
       success: true,
       paymentStatus: paymentIntent.status,
-      transaction: {
-        ...transaction.toObject(),
-        remainingTickets: paymentIntent.status === 'succeeded' ? 
-          Math.max(0, parseInt(transaction.event.ticketLink) - transaction.numberOfTickets) : 
-          parseInt(transaction.event.ticketLink)
-      }
+      transaction: transaction.toObject()
     });
 
   } catch (error) {
-    console.error('Error confirming payment:', error);
-    res.status(500).json({ 
-      message: 'Failed to confirm payment', 
-      error: error.message 
+    console.error('❌ Error confirming payment:', error);
+    res.status(500).json({
+      message: 'Failed to confirm payment',
+      error: error.message
     });
   }
 };
 
-// Get user transactions
+// ------------------------------
+// Get User Transactions
+// ------------------------------
 export const getUserTransactions = async (req, res) => {
   try {
     const userId = req.user.id;
-    
+
     const transactions = await Transaction.find({ user: userId })
       .populate('event', 'title date venue')
       .populate('advertiser', 'name')
@@ -209,19 +197,21 @@ export const getUserTransactions = async (req, res) => {
     res.status(200).json(transactions);
   } catch (error) {
     console.error('Error fetching transactions:', error);
-    res.status(500).json({ 
-      message: 'Failed to fetch transactions', 
-      error: error.message 
+    res.status(500).json({
+      message: 'Failed to fetch transactions',
+      error: error.message
     });
   }
 };
 
-// Get user's purchase history
+// ------------------------------
+// Get User Purchase History
+// ------------------------------
 export const getUserPurchaseHistory = async (req, res) => {
   try {
     const userId = req.user.id;
-    
-    const transactions = await Transaction.find({ 
+
+    const transactions = await Transaction.find({
       user: userId,
       transactionType: 'ticket_purchase',
       paymentStatus: 'succeeded'
@@ -236,19 +226,21 @@ export const getUserPurchaseHistory = async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching purchase history:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'Failed to fetch purchase history', 
-      error: error.message 
+      message: 'Failed to fetch purchase history',
+      error: error.message
     });
   }
 };
 
-// Get advertiser transactions
+// ------------------------------
+// Get Advertiser Transactions
+// ------------------------------
 export const getAdvertiserTransactions = async (req, res) => {
   try {
-    const advertiserId = req.user.id; // Assuming advertiser is logged in
-    
+    const advertiserId = req.user.id;
+
     const transactions = await Transaction.find({ advertiser: advertiserId })
       .populate('event', 'title date venue')
       .populate('user', 'name email')
@@ -257,46 +249,40 @@ export const getAdvertiserTransactions = async (req, res) => {
     res.status(200).json(transactions);
   } catch (error) {
     console.error('Error fetching advertiser transactions:', error);
-    res.status(500).json({ 
-      message: 'Failed to fetch transactions', 
-      error: error.message 
+    res.status(500).json({
+      message: 'Failed to fetch transactions',
+      error: error.message
     });
   }
 };
 
-// Create Payment Intent for Advertiser Event Publication
+// ------------------------------
+// Create Payment Intent (Advertiser - Event Publication)
+// ------------------------------
 export const createAdvertiserPaymentIntent = async (req, res) => {
   try {
     const { amount, eventData } = req.body;
     const advertiserId = req.user._id;
 
-    // Validate input
     if (!amount || amount <= 0) {
-      return res.status(400).json({ 
-        message: 'Invalid payment amount' 
-      });
+      return res.status(400).json({ message: 'Invalid payment amount' });
     }
 
     if (!eventData || !eventData.title || !eventData.ticketPrice) {
-      return res.status(400).json({ 
-        message: 'Event data is required for publication payment' 
-      });
+      return res.status(400).json({ message: 'Event data is required for publication payment' });
     }
 
-    // Fetch advertiser details
     const advertiser = await Advertiser.findById(advertiserId);
     if (!advertiser) {
       return res.status(404).json({ message: 'Advertiser not found' });
     }
 
-    // Convert amount to cents for Stripe
     const totalAmountInCents = Math.round(amount * 100);
 
-    // Create payment intent
     const stripe = getStripe();
     const paymentIntent = await stripe.paymentIntents.create({
       amount: totalAmountInCents,
-      currency: 'usd', // You can change this based on your requirements
+      currency: 'usd',
       metadata: {
         advertiserId: advertiserId.toString(),
         eventTitle: eventData.title,
@@ -314,32 +300,31 @@ export const createAdvertiserPaymentIntent = async (req, res) => {
 
   } catch (error) {
     console.error('Error creating advertiser payment intent:', error);
-    res.status(500).json({ 
-      message: 'Failed to create payment intent', 
-      error: error.message 
+    res.status(500).json({
+      message: 'Failed to create payment intent',
+      error: error.message
     });
   }
 };
 
-// Confirm Advertiser Payment and Publish Event
+// ------------------------------
+// Confirm Advertiser Payment & Publish Event
+// ------------------------------
 export const confirmAdvertiserPayment = async (req, res) => {
   try {
     const { paymentIntentId, eventData } = req.body;
     const advertiserId = req.user._id;
 
-    // Retrieve payment intent from Stripe
     const stripe = getStripe();
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-    
+
     if (paymentIntent.status !== 'succeeded') {
-      return res.status(400).json({ 
-        message: 'Payment not successful' 
-      });
+      return res.status(400).json({ message: 'Payment not successful' });
     }
 
-    // Create the event with published status
+    // Create event with published status
     const { title, description, date, time, venue, district, artist, ticketPrice, ticketLink, poster } = eventData;
-    
+
     const event = new Event({
       title,
       description,
@@ -359,14 +344,14 @@ export const confirmAdvertiserPayment = async (req, res) => {
 
     const savedEvent = await event.save();
 
-    // Create a transaction record for the publication payment
+    // Create transaction for publication payment
     const publicationTransaction = new Transaction({
       advertiser: advertiserId,
       event: savedEvent._id,
       transactionType: 'publication',
-      numberOfTickets: 0, // This is a publication payment, not ticket purchase
+      numberOfTickets: 0,
       ticketPrice: parseFloat(ticketPrice),
-      totalAmount: paymentIntent.amount / 100, // Convert from cents
+      totalAmount: paymentIntent.amount / 100,
       currency: paymentIntent.currency.toUpperCase(),
       stripePaymentIntentId: paymentIntentId,
       paymentStatus: 'succeeded',
@@ -387,9 +372,9 @@ export const confirmAdvertiserPayment = async (req, res) => {
 
   } catch (error) {
     console.error('Error confirming advertiser payment:', error);
-    res.status(500).json({ 
-      message: 'Failed to confirm payment and publish event', 
-      error: error.message 
+    res.status(500).json({
+      message: 'Failed to confirm payment and publish event',
+      error: error.message
     });
   }
 };
