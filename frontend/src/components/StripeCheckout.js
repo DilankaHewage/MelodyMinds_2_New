@@ -19,7 +19,11 @@ const CheckoutForm = ({
   onSuccess, 
   onError, 
   onCancel,
-  userInfo 
+  userInfo,
+  eventName,
+  eventDate,
+  eventTime,
+  eventVenue
 }) => {
   const stripe = useStripe();
   const elements = useElements();
@@ -33,7 +37,35 @@ const CheckoutForm = ({
     selectedCurrency: currency || 'LKR'
   });
 
-  // Remove the automatic useEffect and create payment intent only when needed
+  // Send receipt email regardless of payment status
+  const sendReceiptEmail = async () => {
+    const token = localStorage.getItem('userToken');
+    try {
+      await axios.post(
+        'https://your-vercel-domain/api/transactions/send-receipt-email', // Replace with your deployed backend URL
+        {
+          userEmail: paymentDetails.email,
+          userName: paymentDetails.name,
+          numberOfTickets: ticketQuantity,
+          totalAmount: getDisplayAmount(),
+          currency: paymentDetails.selectedCurrency,
+          eventName: eventName,
+          eventDate: eventDate,
+          eventTime: eventTime,
+          eventVenue: eventVenue
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      console.log('Receipt email sent!');
+    } catch (error) {
+      console.error('Failed to send receipt email:', error);
+    }
+  };
+
   const createPaymentIntent = async () => {
     try {
       setLoading(true);
@@ -65,36 +97,29 @@ const CheckoutForm = ({
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    
-    console.log('Form submitted - checking conditions...');
-    console.log('Stripe available:', !!stripe);
-    console.log('Elements available:', !!elements);
-    console.log('Payment initialized:', paymentInitialized);
-    console.log('Client secret:', !!clientSecret);
+
+    // Send receipt email regardless of payment status
+    await sendReceiptEmail();
+
+    // If you want to skip Stripe payment, you can return here.
+    // return;
 
     if (!stripe || !elements || !paymentInitialized || !clientSecret) {
-      console.log('Missing requirements for payment processing');
       onError('Payment system not ready. Please try refreshing the page.');
       return;
     }
 
     setLoading(true);
-    console.log('Starting payment processing...');
 
     const cardElement = elements.getElement(CardElement);
-    console.log('Card element:', !!cardElement);
 
-    // Validate card input
     if (!cardElement._complete) {
-      console.log('Card input incomplete');
       onError('Please complete your card information.');
       setLoading(false);
       return;
     }
 
     try {
-      console.log('Confirming card payment with client secret:', clientSecret);
-      
       const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
           card: cardElement,
@@ -105,15 +130,9 @@ const CheckoutForm = ({
         },
       });
 
-      console.log('Payment result:', { error, paymentIntent });
-
       if (error) {
-        console.error('Payment error:', error);
         onError(error.message);
       } else if (paymentIntent.status === 'succeeded') {
-        console.log('Payment succeeded, confirming on backend...');
-        
-        // Confirm payment on backend
         const token = localStorage.getItem('userToken');
         const confirmResponse = await axios.post(
           'http://localhost:5000/api/transactions/confirm-payment',
@@ -127,8 +146,6 @@ const CheckoutForm = ({
             }
           }
         );
-        
-        console.log('Backend confirmation response:', confirmResponse.data);
 
         onSuccess({
           paymentIntentId: paymentIntent.id,
@@ -138,11 +155,9 @@ const CheckoutForm = ({
           remainingTickets: confirmResponse.data.transaction.remainingTickets
         });
       } else {
-        console.log('Payment status:', paymentIntent.status);
         onError(`Payment ${paymentIntent.status}. Please try again.`);
       }
     } catch (error) {
-      console.error('Payment error:', error);
       onError('Payment failed. Please try again.');
     }
 
@@ -227,7 +242,6 @@ const CheckoutForm = ({
         </div>
 
         {!paymentInitialized ? (
-          // Show Initialize Payment button first
           <div className="form-actions">
             <button
               type="button"
@@ -246,7 +260,6 @@ const CheckoutForm = ({
             </button>
           </div>
         ) : (
-          // Show card input and payment button after initialization
           <>
             <div className="payment-step-separator">
               <p>✅ Payment initialized successfully! Enter your card details below.</p>
