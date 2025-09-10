@@ -104,6 +104,7 @@ nav {
   .header-container {
       flex-direction: row;
       text-align: center;
+      padding: 0 10px;
   }
 
   .nav-links {
@@ -168,4 +169,57 @@ nav {
 /* Dropdown Menu Animation */
 .dropdown-menu {
   animation: fadeIn 0.3s ease-in-out; /* Smooth fade-in animation */
+}
+
+
+/* Mobile Responsive Design */
+@media (max-width: 480px) {
+  header {
+    height: auto;
+    padding: 10px 0;
+  }
+
+  .header-container {
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 10px;
+  }
+
+  .logo {
+    width: 150px;
+    height: 6vh;
+    margin-top: 5px;
+  }
+
+  nav {
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .nav-links {
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .nav-link-button {
+    font-size: 16px;
+  }
+
+  .user-name-button {
+    padding: 8px 15px;
+    font-size: 14px;
+  }
+
+  .login-link {
+    padding: 8px 15px;
+    font-size: 16px;
+    margin: 0;
+  }
+
+  .dropdown-menu {
+    right: -50px;
+    min-width: 150px;
+  }
 }

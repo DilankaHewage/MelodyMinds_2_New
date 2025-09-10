@@ -27,7 +27,7 @@
 .event-title {
   font-size: 45px;
   font-family: 'Bangers', cursive;
-  font-weight: bold;
+  font-weight: 700;
   color: #faf7f7;
   margin-top: 15px;
 }
@@ -49,6 +49,9 @@
 
 .event-info{
   font-size: 18px;
+}
+.event-info p{
+  color: #f1f1f1;
 }
 
 .event-image {
