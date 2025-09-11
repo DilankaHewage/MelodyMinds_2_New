@@ -9,7 +9,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
-  padding-bottom: 20px;
+  padding: 20px;
   border-bottom: 2px solid #eee;
 }
 
@@ -42,13 +42,13 @@
 }
 
 .tab-button:hover {
-  color: #007bff;
+  color: #c12098;
   background-color: #f8f9fa;
 }
 
 .tab-button.active {
-  color: #007bff;
-  border-bottom-color: #007bff;
+  color: #e845b1;
+  border-bottom-color: #c719b5;
 }
 
 .logout-button {
@@ -84,7 +84,8 @@
 .form-group label {
   margin-bottom: 5px;
   font-weight: bold;
-  color: #333;
+  color: #c82333;
+  
 }
 
 .form-group input,
@@ -104,7 +105,7 @@
 
 .submit-button {
   padding: 12px 24px;
-  background-color: #007bff;
+  background-color: #db56db;
   color: white;
   border: none;
   border-radius: 4px;
@@ -114,7 +115,7 @@
 }
 
 .submit-button:hover {
-  background-color: #0056b3;
+  background-color: #8f177d;
 }
 
 @media (max-width: 768px) {
@@ -127,4 +128,14 @@
   .profile-tabs {
     flex-wrap: wrap;
   }
+}
+
+.profile-form-container  {
+  right: 40%;
+  align-items: center;
+  margin: 20px;
+  padding: 50px;
+  font-size: 14px;
+  background-color: #e5cae2;
+  border-radius: 50px;
 }
