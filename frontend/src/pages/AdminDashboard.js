@@ -25,7 +25,7 @@ const AdminDashboard = () => {
       const { data } = await axios.get('http://localhost:5000/api/users/', config);
       setUsers(data);
       // Analytics calculation
-      const totalUsers = data.length;
+      const totalUsers = data.filter(u => u.role === 'user').length; 
       const totalAdvertisers = data.filter(u => u.role === 'advertiser').length;
       // active users = users updated in last 30 days
       const now = new Date();
@@ -115,11 +115,7 @@ const AdminDashboard = () => {
               <div className="analytics-card">
                 <h3>Total Advertisers</h3>
                 <p>{analytics.totalAdvertisers}</p>
-              </div>
-              <div className="analytics-card">
-                <h3>Top Advertiser</h3>
-                <p>{analytics.topAdvertiser ? analytics.topAdvertiser.name : 'N/A'}</p>
-              </div>
+              </div> 
             </div>
             
             {error && <div className="error-message">{error}</div>}
@@ -158,6 +154,8 @@ const AdminDashboard = () => {
                             name="email"
                             value={editUserData.email}
                             onChange={handleEditChange}
+                            readOnly
+                            disabled
                           />
                         ) : (
                           user.email
@@ -168,7 +166,6 @@ const AdminDashboard = () => {
                           <select name="role" value={editUserData.role} onChange={handleEditChange}>
                             <option value="user">User</option>
                             <option value="advertiser">Advertiser</option>
-                            <option value="admin">Admin</option>
                           </select>
                         ) : (
                           user.role

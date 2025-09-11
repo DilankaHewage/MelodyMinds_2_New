@@ -203,6 +203,7 @@ function Header() {
               </button>
               {dropdownVisible && (
                 <div className="dropdown-menu">
+                  {(advertiserToken || (userToken && localStorage.getItem('userRole') !== 'admin')) && (
                   <button
                     className="dropdown-item"
                     onClick={async () => {
@@ -216,6 +217,7 @@ function Header() {
                   >
                     Profile
                   </button>
+                  )}
                   <button className="dropdown-item" onClick={handleLogout}>
                     Logout
                   </button>
