@@ -3,9 +3,11 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './UserProfile.css';
 import PurchaseHistory from '../components/PurchaseHistory';
+import { useMessage } from '../components/Message';
 
 const UserProfile = ({ userName, setUserName }) => {
   const navigate = useNavigate();
+  const { showSuccess, showError, MessageContainer } = useMessage();
   const [activeTab, setActiveTab] = useState('profile');
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -98,10 +100,22 @@ const UserProfile = ({ userName, setUserName }) => {
 
       setUser(response.data);
       setUserName(response.data.name);
-      alert('Profile updated successfully!');
+      
+      // Update localStorage with new name
+      localStorage.setItem('userName', response.data.name);
+      
+      // Dispatch custom event to update name across components
+      window.dispatchEvent(new CustomEvent('userNameUpdated', { detail: response.data.name }));
+      
+      showSuccess('Profile updated successfully!');
+      
+      // Navigate to user dashboard after successful update
+      setTimeout(() => {
+        navigate('/userdashboard');
+      }, 1500);
     } catch (error) {
       console.error('Error updating profile:', error);
-      alert('Failed to update profile');
+      showError('Failed to update profile');
     }
   };
 
@@ -125,7 +139,7 @@ const UserProfile = ({ userName, setUserName }) => {
       <div className="profile-header">
         <h1>User Profile</h1>
         <div className="user-info">
-          <span>Welcome, {userName}</span>
+          <span>Welcome,{user?.name || 'User'}</span>
         </div>
       </div>
 
@@ -166,39 +180,7 @@ const UserProfile = ({ userName, setUserName }) => {
                 />
               </div>
 
-              <div className="form-group">
-                <label htmlFor="email">Email</label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="bio">Bio</label>
-                <textarea
-                  id="bio"
-                  name="bio"
-                  value={formData.bio}
-                  onChange={handleInputChange}
-                  rows="4"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="profilePicture">Profile Picture</label>
-                <input
-                  type="file"
-                  id="profilePicture"
-                  name="profilePicture"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                />
-              </div>
+              <div className="wording"> Want to be a advertiser? Contact us at admin@gmail.com </div>
 
               <button type="submit" className="submit-button">
                 Update Profile
@@ -211,6 +193,7 @@ const UserProfile = ({ userName, setUserName }) => {
           <PurchaseHistory />
         )}
       </div>
+      <MessageContainer />
     </div>
   );
 };

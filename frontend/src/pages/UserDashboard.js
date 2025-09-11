@@ -55,6 +55,17 @@ const UserDashboard = () => {
 
     fetchEvents();
     fetchUserName();
+
+    // Listen for custom event to update name when profile is updated
+    const handleUserNameUpdate = (event) => {
+      setUserName(event.detail);
+    };
+
+    window.addEventListener('userNameUpdated', handleUserNameUpdate);
+
+    return () => {
+      window.removeEventListener('userNameUpdated', handleUserNameUpdate);
+    };
   }, []);
 
 
