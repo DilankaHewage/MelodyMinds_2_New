@@ -100,7 +100,7 @@ background: url('/public/images/bg1.jpg') no-repeat center center/cover;
   .save-button {
     display: block;
     margin: 30px auto 0;
-    padding: 12px 32px;
+    padding: 12px 350px;
     background-color: #8f34c8;
     border: none;
     color: white;

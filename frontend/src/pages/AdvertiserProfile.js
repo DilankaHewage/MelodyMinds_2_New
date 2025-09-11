@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import './AdvertiserProfile.css';
 import { useNavigate } from 'react-router-dom';
+import { useMessage } from '../components/Message';
+
 
 
 const AdvertiserProfile = () => {
@@ -11,6 +13,7 @@ const AdvertiserProfile = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
+  const { showSuccess, showError, MessageContainer } = useMessage();
 
   const [personal, setPersonal] = useState({
     firstName: '',
@@ -86,65 +89,63 @@ const AdvertiserProfile = () => {
     }
   };
 
-  const handleSave = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setMessage('Please login to update your profile');
-      return;
+const handleSave = async () => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    showError('Please login to update your profile');
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const formData = new FormData();
+    formData.append('firstName', personal.firstName);
+    formData.append('lastName', personal.lastName);
+    formData.append('nicNumber', personal.nicNumber);
+    formData.append('gender', personal.gender);
+    formData.append('country', personal.country);
+    formData.append('telephone', personal.telephone);
+    formData.append('companyName', company.companyName);
+    formData.append('companyPosition', company.companyPosition);
+    formData.append('companyWebsite', company.companyWebsite);
+    formData.append('companyTelephone', company.companyTelephone);
+
+    if (profilePictureFile) {
+      formData.append('profilePicture', profilePictureFile);
     }
 
-    setLoading(true);
-    setMessage('');
-
-    try {
-      // Create FormData for file upload
-      const formData = new FormData();
-      
-      // Add profile data
-      formData.append('firstName', personal.firstName);
-      formData.append('lastName', personal.lastName);
-      formData.append('nicNumber', personal.nicNumber);
-      formData.append('gender', personal.gender);
-      formData.append('country', personal.country);
-      formData.append('telephone', personal.telephone);
-      formData.append('companyName', company.companyName);
-      formData.append('companyPosition', company.companyPosition);
-      formData.append('companyWebsite', company.companyWebsite);
-      formData.append('companyTelephone', company.companyTelephone);
-
-      // Add profile picture if selected
-      if (profilePictureFile) {
-        formData.append('profilePicture', profilePictureFile);
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data'
       }
+    };
 
-      const config = {
-        headers: { 
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data'
-        }
-      };
+    const response = await axios.put('http://localhost:5000/api/advertisers/profile', formData, config);
 
-      const response = await axios.put('http://localhost:5000/api/advertisers/profile', formData, config);
-      
-      setMessage('Profile updated successfully!');
-      const newFullName = `${personal.firstName} ${personal.lastName}`.trim();
-      window.dispatchEvent(new CustomEvent('userNameUpdated', { detail: newFullName }));
-      setTimeout(() => {
-        navigate('/advertiser-dashboard');
-      }, 2000);
-      setProfilePictureFile(null); // Clear the file after successful upload
-      
-      // Update the profile picture URL if a new one was uploaded
-      if (response.data.profilePictureUrl) {
-        setProfilePicture(response.data.profilePictureUrl);
-      }
-    } catch (error) {
-      console.error('Failed to update profile:', error);
-      setMessage(error.response?.data?.message || 'Failed to update profile');
-    } finally {
-      setLoading(false);
+    showSuccess('Profile updated successfully!');
+    
+    const newFullName = `${personal.firstName} ${personal.lastName}`.trim();
+    window.dispatchEvent(new CustomEvent('userNameUpdated', { detail: newFullName }));
+
+    setTimeout(() => {
+      navigate('/advertiser-dashboard');
+    }, 2000);
+
+    setProfilePictureFile(null);
+    if (response.data.profilePictureUrl) {
+      setProfilePicture(response.data.profilePictureUrl);
     }
-  };
+
+  } catch (error) {
+    console.error('Failed to update profile:', error);
+    showError(error.response?.data?.message || 'Failed to update profile');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className='advertiser-profile-container'>
@@ -177,16 +178,10 @@ const AdvertiserProfile = () => {
                   ))}
                 </select>
               ) : (
-                <input
+                <input 
                    type="text"
                     value={personal[key]}
                    readOnly={key === 'nicNumber'}
-                    onClick={() => {
-                    if (key === 'nicNumber') {
-                      setMessage("You can't edit your NIC number. Contact admin for changes. admin@gmail.com");
-                      setTimeout(() => setMessage(''), 3000); // Clear message after 3s
-              }
-              }}
           onChange={(e) => handleChange('personal', key, e.target.value)}
                 />
 
@@ -221,6 +216,7 @@ const AdvertiserProfile = () => {
         {loading ? 'Updating...' : 'Update Profile'}
       </button>
     </div>
+    <MessageContainer />
     </div>
   );
 };
