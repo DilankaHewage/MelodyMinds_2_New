@@ -572,3 +572,94 @@
     width: 100%;
   }
 }
+@media (max-width: 768px) {
+  .event-details-page {
+    padding: 10px;
+  }
+
+  .event-details-page .overlay {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .event-content {
+    flex-direction: column;
+    margin-right: 0;
+    margin-left: 0;
+  }
+
+  .event-right {
+    font-size: 1rem;
+    margin-left: 0;
+  }
+
+  .event-title {
+    font-size: 35px;
+  }
+
+  .interaction-section {
+    gap: 100px;
+  }
+
+  .commenting-button {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .event-details-page {
+    padding: 5px;
+  }
+
+  .event-details-page .overlay {
+    padding: 5px;
+  }
+
+  .event-title {
+    font-size: 28px;
+  }
+
+  .event-info {
+    font-size: 16px;
+  }
+
+  .interaction-section {
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .commenting-button {
+    font-size: 13px;
+    padding: 6px 10px;
+    gap: 10px;
+  }
+
+  .event-image {
+    margin-top: 15px;
+  }
+
+  .event-right {
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .buy-tickets-link {
+    font-size: 1rem;
+    padding: 8px 16px;
+  }
+
+  .comment-section h2 {
+    font-size: 20px;
+  }
+
+  .comment-input {
+    font-size: 14px;
+  }
+
+  .add-comment-button {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+}
