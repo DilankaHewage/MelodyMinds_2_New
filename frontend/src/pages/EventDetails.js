@@ -476,7 +476,7 @@ const EventDetails = () => {
             <div className="event-title-container">
               <h1 className="event-title">{event.title}</h1>
             </div>
-            <div className="event-info">
+            <div className="event-information">
               <p><strong>Description:</strong> {event.description}</p>
               <p><strong>Date:</strong> {event.date}</p>
               <p><strong>Time:</strong> {event.time}</p>

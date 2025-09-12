@@ -13,7 +13,7 @@ export const createEvent = async (req, res) => {
       });
     }
 
-    const { title, description, date, time, venue, district, artist, ticketPrice, ticketLink } = req.body;
+    const { title, description, date, time, venue, district, artist, ticketPrice, ticketLink, lat, lng } = req.body;
 
     // Check if poster is uploaded
     if (!req.file) {
@@ -38,7 +38,9 @@ export const createEvent = async (req, res) => {
       ticketLink,
       poster: posterUrl,
       advertiser: req.user._id, // Link event to the advertiser who created it
-      isActive: true
+      isActive: true,
+      lat,
+      lng
     });
 
     // Save the event

@@ -191,7 +191,7 @@
 }
 
 /* Clear Filters Button */
-.clear-filters button {
+.clear-filters button,.near-me-section button {
   display: inline-block;
   padding: 12px 20px;
   background-color: rgba(202, 99, 180, 0.964);
@@ -205,7 +205,7 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-.clear-filters button:hover {
+.clear-filters button:hover, .near-me-section button:hover {
   background-color: #c537b2;
   color: rgb(14, 13, 13);
   box-shadow: 0 5px 15px rgba(204, 96, 188, 0.5);
@@ -311,4 +311,61 @@
 
 .clear-btn:hover {
   color: #333;
+}
+
+
+.radius-filter label{
+  margin-top: 10px;
+  color: #fff;
+}
+
+.radius-filter select {
+  padding: 8px 10px;
+  font-size: 14px;
+  border-radius: 16px;
+  border: 1px solid #ccc;
+  outline: none;
+  background-color: #fff;
+  width: 100px;
+  border-color: #c537b2;
+  color:  #6a5acd;
+  font-weight: bold;
+}
+
+.radius-filter select option {
+  color: #131211;
+}
+
+/* Mobile Responsive Styles for Distance Dropdown */
+@media (max-width: 768px) {
+  .radius-filter {
+    margin-top: 12px;
+    text-align: center;
+  }
+
+  .radius-filter label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+  }
+
+  .radius-filter select {
+    width: 30%;
+    max-width: 250px;   /* limit size so it doesn’t look huge */
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .radius-filter label {
+    font-size: 13px;
+  }
+
+  .radius-filter select {
+    width: 30%;
+    max-width: 220px;   /* keep it neat on very small screens */
+    font-size: 13px;
+    padding: 6px 8px;
+  }
 }
