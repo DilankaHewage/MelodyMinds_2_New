@@ -135,6 +135,7 @@ const UserProfile = ({ userName, setUserName }) => {
   }
 
   return (
+    <div className='profile-background'>
     <div className="user-profile-container">
       <div className="profile-header">
         <h1>User Profile</h1>
@@ -194,6 +195,7 @@ const UserProfile = ({ userName, setUserName }) => {
         )}
       </div>
       <MessageContainer />
+    </div>
     </div>
   );
 };

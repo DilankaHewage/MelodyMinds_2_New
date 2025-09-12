@@ -322,8 +322,8 @@ export const confirmAdvertiserPayment = async (req, res) => {
       return res.status(400).json({ message: 'Payment not successful' });
     }
 
-    // Create event with published status
-    const { title, description, date, time, venue, district, artist, ticketPrice, ticketLink, poster } = eventData;
+    // Create event with published status (including location)
+    const { title, description, date, time, venue, district, artist, ticketPrice, ticketLink, poster, lat, lng } = eventData;
 
     const event = new Event({
       title,
@@ -339,7 +339,9 @@ export const confirmAdvertiserPayment = async (req, res) => {
       advertiser: advertiserId,
       isActive: true,
       isPublished: true,
-      publicationPaymentId: paymentIntentId
+      publicationPaymentId: paymentIntentId,
+      lat,
+      lng
     });
 
     const savedEvent = await event.save();

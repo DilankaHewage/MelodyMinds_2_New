@@ -47,10 +47,10 @@
   align-items: center;
 }
 
-.event-info{
+.event-information{
   font-size: 18px;
 }
-.event-info p{
+.event-information p{
   color: #f1f1f1;
 }
 
@@ -620,7 +620,7 @@
     font-size: 28px;
   }
 
-  .event-info {
+  .event-information {
     font-size: 16px;
   }
 

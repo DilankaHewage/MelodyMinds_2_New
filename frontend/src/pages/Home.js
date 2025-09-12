@@ -4,6 +4,8 @@ import EventCard from '../components/EventCard';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './Home.css';
+import { useMemo } from 'react';
+
 
 const districts = [
   'Colombo', 'Gampaha', 'Kalutara', 'Kandy', 'Matale',
@@ -19,6 +21,10 @@ const Home = () => {
   const [selectedDistricts, setSelectedDistricts] = useState([]);
   const [isDistrictListVisible, setIsDistrictListVisible] = useState(false);
   const [commentCounts, setCommentCounts] = useState({});
+  const [userLocation, setUserLocation] = useState(null);
+  const [nearMeEnabled, setNearMeEnabled] = useState(false);
+   const [radiusKm, setRadiusKm] = useState(20); 
+  
 
   // Fetch comment counts for all events
   const fetchCommentCounts = useCallback(async (eventList) => {
@@ -67,19 +73,81 @@ const Home = () => {
     };
   }, [events, fetchCommentCounts]);
 
+const toRadians = (deg) => (deg * Math.PI) / 180;
+  const distanceKm = (lat1, lng1, lat2, lng2) => {
+    const R = 6371;
+    const dLat = toRadians(lat2 - lat1);
+    const dLng = toRadians(lng2 - lng1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRadians(lat1)) *
+      Math.cos(toRadians(lat2)) *
+      Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  };
+
   // Filter and search events based on filters and search term
-  const filteredEvents = events.filter(event => {
-    const isSearchMatch = event.title
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const isDateMatch = selectedDate
-      ? new Date(event.date).toDateString() === selectedDate.toDateString()
-      : true;
-    const isDistrictMatch = selectedDistricts.length > 0
-      ? selectedDistricts.includes(event.district)
-      : true;
-    return isSearchMatch && isDateMatch && isDistrictMatch;
-  });
+const filteredEvents = useMemo(() => {
+    return events
+      .filter(event => {
+        const isSearchMatch = event.title.toLowerCase().includes(searchTerm.toLowerCase());
+        const isDateMatch = selectedDate
+          ? new Date(event.date).toDateString() === selectedDate.toDateString()
+          : true;
+        const isDistrictMatch = selectedDistricts.length > 0
+          ? selectedDistricts.includes(event.district)
+          : true;
+
+        let isNearMeMatch = true;
+        if (nearMeEnabled) {
+          if (!userLocation) return false; // wait for location
+          const lat = Number(event.lat);
+          const lng = Number(event.lng);
+          if (isNaN(lat) || isNaN(lng)) return false;
+          const d = distanceKm(userLocation.lat, userLocation.lng, lat, lng);
+          console.log(
+            `UserLocation: (${userLocation.lat}, ${userLocation.lng}) | ` +
+            `Event: ${event.title}, EventLocation: (${lat}, ${lng}) | ` +
+            `Distance: ${d.toFixed(2)} km`
+          );
+          isNearMeMatch = d <= radiusKm;
+        }
+
+        return isSearchMatch && isDateMatch && isDistrictMatch && isNearMeMatch;
+      })
+      .sort((a, b) => {
+        if (nearMeEnabled && userLocation && a.lat && a.lng && b.lat && b.lng) {
+          const da = distanceKm(userLocation.lat, userLocation.lng, Number(a.lat), Number(a.lng));
+          const db = distanceKm(userLocation.lat, userLocation.lng, Number(b.lat), Number(b.lng));
+          return da - db;
+        }
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+  }, [events, searchTerm, selectedDate, selectedDistricts, nearMeEnabled, userLocation, radiusKm]);
+
+  // Near Me handler
+  const handleNearMe = () => {
+    if (!nearMeEnabled) {
+      if (!navigator.geolocation) {
+        alert('Geolocation is not supported by your browser');
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+          setNearMeEnabled(true); // Enable after location is set
+        },
+        () => {
+          alert('Unable to retrieve your location');
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    } else {
+      setNearMeEnabled(false);
+      setUserLocation(null);
+    }
+  };
 
   const clearFilters = () => {
     setSelectedDate(null);
@@ -134,6 +202,7 @@ const Home = () => {
         </div>
 
         {/* District Filter */}
+        
         <div className="filter-district">
           <label className="text-styling">Select District:</label>
           <button
@@ -147,7 +216,7 @@ const Home = () => {
                   <button
                     className="remove-district-btn"
                     onClick={(e) => {
-                      e.stopPropagation(); // Prevent dropdown toggle
+                      e.stopPropagation();
                       setSelectedDistricts(selectedDistricts.filter(d => d !== district));
                     }}
                   >
@@ -167,7 +236,7 @@ const Home = () => {
               onChange={(e) => {
                 const selectedOptions = Array.from(e.target.selectedOptions, option => option.value);
                 setSelectedDistricts(selectedOptions);
-                setIsDistrictListVisible(false); // Hide the dropdown after selection
+                setIsDistrictListVisible(false);
               }}
             >
               {districts.map((district, index) => (
@@ -179,10 +248,24 @@ const Home = () => {
           )}
         </div>
 
-        {/* Clear Filters */}
         <div className="clear-filters">
           <button onClick={clearFilters}>Clear Filters</button>
         </div>
+
+        <div className="near-me-section" style={{ marginTop: 16 }}>
+          <button onClick={handleNearMe}>{nearMeEnabled ? 'Show All' : 'Near Me'}</button>
+        </div>
+
+        {nearMeEnabled && (
+          <div className="radius-filter">
+            <label>Distance : </label>
+            <select value={radiusKm} onChange={(e) => setRadiusKm(Number(e.target.value))}>
+              <option value={10}>10 km</option>
+              <option value={20}>20 km</option>
+              <option value={30}>30 km</option>
+            </select>
+          </div>
+        )}
       </div>
 
       {/* Event Cards */}

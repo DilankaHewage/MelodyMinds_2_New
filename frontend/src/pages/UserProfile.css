@@ -1,7 +1,14 @@
+.profile-background {
+  background: url('/public/images/bg1.jpg') no-repeat center center/cover; 
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
 .user-profile-container {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
+  border-color: #8f177d !important;
 }
 
 .profile-header {
@@ -19,7 +26,7 @@
 }
 
 .user-info {
-  color: #666;
+  color: #1c1b1b;
   font-size: 16px;
 }
 
@@ -36,18 +43,18 @@
   background: none;
   cursor: pointer;
   font-size: 16px;
-  color: #666;
+  color: #0f0c0c;
   border-bottom: 2px solid transparent;
   transition: all 0.3s ease;
 }
 
 .tab-button:hover {
-  color: #c12098;
+  color: #e746bf;
   background-color: #f8f9fa;
 }
 
 .tab-button.active {
-  color: #e845b1;
+  color: #941e6c;
   border-bottom-color: #c719b5;
 }
 
