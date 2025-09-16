@@ -28,7 +28,11 @@ const eventSchema = mongoose.Schema(
     publicationPaymentId: {
       type: String,
       required: false
-    }
+    },
+
+   lat: { type: Number, required: true },
+    lng: { type: Number, required: true }
+
   },
   { timestamps: true }
 );

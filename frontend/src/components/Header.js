@@ -13,11 +13,42 @@ function Header() {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const dropdownRef = useRef(null);
 
+  // Helper function to refresh user name
+  const refreshUserName = async () => {
+    if (!isLoggedIn) return;
+    
+    try {
+      if (userToken) {
+        const config = {
+          headers: { Authorization: `Bearer ${userToken}` },
+        };
+        const { data } = await axios.get('http://localhost:5000/api/users/profile', config);
+        setUserName(data.name);
+      } else if (advertiserToken) {
+        const config = {
+          headers: { Authorization: `Bearer ${advertiserToken}` },
+        };
+        const { data } = await axios.get('http://localhost:5000/api/advertisers/profile', config);
+        const fullName = `${data.firstName || ''} ${data.lastName || ''}`.trim();
+        setUserName(fullName);
+      }
+    } catch (error) {
+      console.error('Error refreshing profile:', error);
+    }
+  };
+
   useEffect(() => {
     const fetchUserName = async () => {
       try {
         if (userToken) {
-          // Fetch user profile
+          // First try to get userName from localStorage (set during login)
+          const storedUserName = localStorage.getItem('userName');
+          if (storedUserName) {
+            setUserName(storedUserName);
+            return;
+          }
+          
+          // If not in localStorage, fetch user profile
           const config = {
             headers: { Authorization: `Bearer ${userToken}` },
           };
@@ -42,15 +73,33 @@ function Header() {
       fetchUserName();
     }
 
-    // Listen for custom event to update name immediately after login
+    // Listen for custom event to update name immediately after login or profile update
     const handleUserNameUpdate = (event) => {
       setUserName(event.detail);
     };
 
+    // Listen for page visibility change to refresh name when user returns to the page
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && isLoggedIn) {
+        fetchUserName();
+      }
+    };
+
+    // Listen for window focus to refresh name when user returns to the tab
+    const handleWindowFocus = () => {
+      if (isLoggedIn) {
+        fetchUserName();
+      }
+    };
+
     window.addEventListener('userNameUpdated', handleUserNameUpdate);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleWindowFocus);
 
     return () => {
       window.removeEventListener('userNameUpdated', handleUserNameUpdate);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleWindowFocus);
     };
   }, [isLoggedIn, userToken, advertiserToken]);
 
@@ -64,38 +113,41 @@ function Header() {
     navigate('/login');
   };
 
-  const handleHomeClick = () => {
-  const userToken = localStorage.getItem('userToken');
-  const advertiserToken = localStorage.getItem('token');
-  const userRole = localStorage.getItem('userRole');
+  const handleHomeClick = async () => {
+    const userToken = localStorage.getItem('userToken');
+    const advertiserToken = localStorage.getItem('token');
+    const userRole = localStorage.getItem('userRole');
 
-  // Not logged in
-  if (!userToken && !advertiserToken) {
+    // Refresh user name before navigation
+    await refreshUserName();
+
+    // Not logged in
+    if (!userToken && !advertiserToken) {
+      navigate('/');
+      return;
+    }
+
+    // Admin user
+    if (userRole === 'admin') {
+      navigate('/admin-dashboard');
+      return;
+    }
+
+    // Regular user
+    if (userToken && userRole === 'user') {
+      navigate('/userdashboard');
+      return;
+    }
+
+    // Advertiser
+    if (advertiserToken) {
+      navigate('/advertiser-dashboard');
+      return;
+    }
+
+    // fallback
     navigate('/');
-    return;
-  }
-
-  // Admin user
-  if (userRole === 'admin') {
-    navigate('/admin-dashboard');
-    return;
-  }
-
-  // Regular user
-  if (userToken && userRole === 'user') {
-    navigate('/userdashboard');
-    return;
-  }
-
-  // Advertiser
-  if (advertiserToken) {
-    navigate('/advertiser-dashboard');
-    return;
-  }
-
-  // fallback
-  navigate('/');
-};
+  };
 
   const toggleDropdown = () => {
     setDropdownVisible((prev) => !prev);
@@ -128,12 +180,18 @@ function Header() {
               </button>
             </li>
             <li>
-              <button className="nav-link-button" onClick={() => navigate('/about')}>
+              <button className="nav-link-button" onClick={async () => {
+                await refreshUserName();
+                navigate('/about');
+              }}>
                 About Us
               </button>
             </li>
             <li>
-              <button className="nav-link-button" onClick={() => navigate('/help')}>
+              <button className="nav-link-button" onClick={async () => {
+                await refreshUserName();
+                navigate('/help');
+              }}>
                 Help
               </button>
             </li>
@@ -145,9 +203,11 @@ function Header() {
               </button>
               {dropdownVisible && (
                 <div className="dropdown-menu">
+                  {(advertiserToken || (userToken && localStorage.getItem('userRole') !== 'admin')) && (
                   <button
                     className="dropdown-item"
-                    onClick={() => {
+                    onClick={async () => {
+                      await refreshUserName();
                       if (userToken) {
                         navigate('/user-profile');
                       } else if (advertiserToken) {
@@ -157,6 +217,7 @@ function Header() {
                   >
                     Profile
                   </button>
+                  )}
                   <button className="dropdown-item" onClick={handleLogout}>
                     Logout
                   </button>

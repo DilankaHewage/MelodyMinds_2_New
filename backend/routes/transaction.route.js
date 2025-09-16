@@ -1,11 +1,14 @@
 import express from 'express';
+
+
 import { 
   createPaymentIntent, 
   confirmPayment, 
   getUserTransactions, 
   getAdvertiserTransactions,
   createAdvertiserPaymentIntent,
-  confirmAdvertiserPayment
+  confirmAdvertiserPayment,
+  getUserPurchaseHistory
 } from '../controllers/transaction.controller.js';
 import { protect } from '../middleware/authMiddleware.js';
 
@@ -29,4 +32,11 @@ router.post('/create-advertiser-payment-intent', protect, createAdvertiserPaymen
 // Confirm advertiser payment and publish event
 router.post('/confirm-advertiser-payment', protect, confirmAdvertiserPayment);
 
+// Purchase history
+router.get('/purchase-history', protect, getUserPurchaseHistory);
+
+
+
+
 export default router;
+

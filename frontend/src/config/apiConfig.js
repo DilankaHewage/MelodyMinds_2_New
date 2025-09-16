@@ -1,19 +1,8 @@
-// API Configuration for different environments
-const API_CONFIG = {
-  // Development (local)
-  development: 'http://localhost:5000',
-  
-  // Production (Railway)
-  production: 'https://melodyminds2new-production.up.railway.app'
-};
+// frontend/src/config/apiConfig.js
 
-// Get current environment
-const isDevelopment = process.env.NODE_ENV === 'development';
+// Use an environment variable so dev and prod work without code changes.
+// - Local dev: set REACT_APP_API_URL=http://localhost:5000 in frontend/.env
+// - Vercel: set REACT_APP_API_URL=https://melodyminds2new-production.up.railway.app in Project Settings
+export const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
-// Export the base URL
-export const API_BASE_URL = isDevelopment ? API_CONFIG.development : API_CONFIG.production;
-
-// Helper function to build full API URLs
-export const buildApiUrl = (endpoint) => {
-  return `${API_BASE_URL}${endpoint}`;
-};
+export const buildApiUrl = (endpoint) => `${API_BASE_URL}${endpoint}`;

@@ -1,6 +1,9 @@
 import Advertiser from '../models/advertiser.model.js';
 import jwt from 'jsonwebtoken';
 import { hashPassword, comparePassword } from './utils/passwordUtils.js';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 
 // Helper function to generate JWT Token
 const generateToken = (id, userType) => {
@@ -133,5 +136,46 @@ export const getAdvertiserProfile = async (req, res) => {
   } catch (error) {
     console.error("Error fetching advertiser profile:", error);
     res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Update Advertiser Profile (with optional profile picture upload)
+export const updateAdvertiserProfile = async (req, res) => {
+  try {
+    const advertiser = await Advertiser.findById(req.user.id);
+    if (!advertiser) {
+      return res.status(404).json({ message: 'Advertiser not found' });
+    }
+
+    const fields = [
+      'firstName','lastName','nicNumber','gender','country','telephone',
+      'companyName','companyPosition','companyWebsite','companyTelephone'
+    ];
+    fields.forEach((f) => {
+      if (typeof req.body[f] !== 'undefined') {
+        advertiser[f] = req.body[f];
+      }
+    });
+
+    // Handle profile picture if uploaded
+    if (req.file) {
+      const uploadsDir = path.join(process.cwd(), 'backend', 'uploads');
+      if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+
+      const filename = `profilePicture-${Date.now()}-${Math.round(Math.random()*1e9)}${path.extname(req.file.originalname)}`;
+      const filepath = path.join(uploadsDir, filename);
+      fs.writeFileSync(filepath, req.file.buffer);
+
+      advertiser.profilePictureUrl = `/uploads/${filename}`;
+    }
+
+    await advertiser.save();
+
+    const sanitized = advertiser.toObject();
+    delete sanitized.password;
+    return res.status(200).json(sanitized);
+  } catch (error) {
+    console.error('Error updating advertiser profile:', error);
+    return res.status(500).json({ message: 'Server error' });
   }
 };

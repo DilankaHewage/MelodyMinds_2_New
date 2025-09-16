@@ -27,7 +27,7 @@
 .event-title {
   font-size: 45px;
   font-family: 'Bangers', cursive;
-  font-weight: bold;
+  font-weight: 700;
   color: #faf7f7;
   margin-top: 15px;
 }
@@ -47,8 +47,11 @@
   align-items: center;
 }
 
-.event-info{
+.event-information{
   font-size: 18px;
+}
+.event-information p{
+  color: #f1f1f1;
 }
 
 .event-image {
@@ -72,37 +75,31 @@
   
 }
 
-.reaction-button,
+
 .commenting-button {
-  background-color: transparent;
-  border: none;
-  color:  #cbbecb; 
-  font-size: 16px;
+  background-color: white;
+  border-color: none;
+  border-radius: 20px;
+  color:  #5b585b; 
+  font-size: 15px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 5px; /* Space between the icon and text inside the button */
+  gap: 18px; /* Space between the icon and text inside the button */
   transition: color 0.3s ease, transform 0.2s ease;
+  padding: 10px 15px;
 }
 
-.reaction-button.liked {
-  color: #1976d2 /* Change color when liked */
-}
 
-.reaction-button:hover,
-.comment-button:hover {
+.commenting-button:hover {
   color: #c94bdd;
   transform: scale(1.1);
 }
 
-.reaction-button:hover,
-.comment-button:hover {
-  color: #c862c8;
-  transform: scale(1.2);
-}
 
 .icon {
-  font-size: 25px;
+  font-size: 18px;
+  color: rgb(177, 172, 172);
 }
 
 .comment-section {
@@ -114,7 +111,7 @@
   font-size: 24px;
   margin-bottom: 15px;
   text-align: center;
-  color: #faf7f7;
+  color: #dfc8e1;
 }
 
 .comment-list {
@@ -125,13 +122,14 @@
 
 .comment-item {
   background-color: #f1f1f1;
-  padding: 10px;
+  padding: 10px 25px;
   margin-bottom: 10px;
-  border-radius: 5px;
+  border-radius: 25px;
 }
 
 .add-comment {
   display: flex;
+  border-radius: 20px;
   gap: 10px;
 }
 
@@ -572,5 +570,96 @@
   .payment-btn,
   .cancel-btn {
     width: 100%;
+  }
+}
+@media (max-width: 768px) {
+  .event-details-page {
+    padding: 10px;
+  }
+
+  .event-details-page .overlay {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .event-content {
+    flex-direction: column;
+    margin-right: 0;
+    margin-left: 0;
+  }
+
+  .event-right {
+    font-size: 1rem;
+    margin-left: 0;
+  }
+
+  .event-title {
+    font-size: 35px;
+  }
+
+  .interaction-section {
+    gap: 100px;
+  }
+
+  .commenting-button {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .event-details-page {
+    padding: 5px;
+  }
+
+  .event-details-page .overlay {
+    padding: 5px;
+  }
+
+  .event-title {
+    font-size: 28px;
+  }
+
+  .event-information {
+    font-size: 16px;
+  }
+
+  .interaction-section {
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .commenting-button {
+    font-size: 13px;
+    padding: 6px 10px;
+    gap: 10px;
+  }
+
+  .event-image {
+    margin-top: 15px;
+  }
+
+  .event-right {
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .buy-tickets-link {
+    font-size: 1rem;
+    padding: 8px 16px;
+  }
+
+  .comment-section h2 {
+    font-size: 20px;
+  }
+
+  .comment-input {
+    font-size: 14px;
+  }
+
+  .add-comment-button {
+    padding: 8px 16px;
+    font-size: 14px;
   }
 }

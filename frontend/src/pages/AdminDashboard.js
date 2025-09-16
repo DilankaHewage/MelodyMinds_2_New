@@ -25,7 +25,7 @@ const AdminDashboard = () => {
       const { data } = await axios.get('http://localhost:5000/api/users/', config);
       setUsers(data);
       // Analytics calculation
-      const totalUsers = data.length;
+      const totalUsers = data.filter(u => u.role === 'user').length; 
       const totalAdvertisers = data.filter(u => u.role === 'advertiser').length;
       // active users = users updated in last 30 days
       const now = new Date();
@@ -97,8 +97,7 @@ const AdminDashboard = () => {
         <ul>
           <li className={activeSection === 'user-management' ? 'active' : ''} onClick={() => setActiveSection('user-management')}>User Management</li>
           <li className={activeSection === 'user-dashboard' ? 'active' : ''} onClick={() => setActiveSection('user-dashboard')}>User Dashboard</li>
-          <li className={activeSection === 'advertiser-dashboard' ? 'active' : ''} onClick={() => setActiveSection('advertiser-dashboard')}>Advertiser Dashboard</li>
-        </ul>
+              </ul>
       </aside>
       <main className="admin-main">
         {activeSection === 'user-management' && (
@@ -116,16 +115,9 @@ const AdminDashboard = () => {
               <div className="analytics-card">
                 <h3>Total Advertisers</h3>
                 <p>{analytics.totalAdvertisers}</p>
-              </div>
-              <div className="analytics-card">
-                <h3>Top Advertiser</h3>
-                <p>{analytics.topAdvertiser ? analytics.topAdvertiser.name : 'N/A'}</p>
-              </div>
+              </div> 
             </div>
-            <div className="charts-section">
-              {/* Placeholder for charts, e.g., pie/bar charts for analytics */}
-              <div className="chart-placeholder">[Charts will be here]</div>
-            </div>
+            
             {error && <div className="error-message">{error}</div>}
             {loading ? (
               <p>Loading users...</p>
@@ -162,6 +154,8 @@ const AdminDashboard = () => {
                             name="email"
                             value={editUserData.email}
                             onChange={handleEditChange}
+                            readOnly
+                            disabled
                           />
                         ) : (
                           user.email
@@ -172,7 +166,6 @@ const AdminDashboard = () => {
                           <select name="role" value={editUserData.role} onChange={handleEditChange}>
                             <option value="user">User</option>
                             <option value="advertiser">Advertiser</option>
-                            <option value="admin">Admin</option>
                           </select>
                         ) : (
                           user.role
@@ -187,7 +180,7 @@ const AdminDashboard = () => {
                         ) : (
                           <>
                             <button onClick={() => handleEdit(user)}>Edit</button>
-                            <button onClick={() => handleDelete(user._id)}>Delete</button>
+                            
                           </>
                         )}
                       </td>

@@ -1,7 +1,7 @@
 /* Main container for the page */
 .advertiser-eventing {
   display: flex;
-  height: 160vh;
+  height: 170vh;
   justify-content: center;
   align-items: flex-start;
   padding: 20px;
@@ -13,7 +13,7 @@
   display: flex;
   justify-content: space-between;
   gap: 20px;
-  height: 160vh;
+  height: 170vh;
   width: 100%;
   max-width: 1200px;
   background-color: transparent;
@@ -95,7 +95,7 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   background-color: transparent;
-  height: 154vh;
+  height: 164vh;
 }
 
 .event-preview-container h2, 
@@ -144,4 +144,77 @@
   margin: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Keep a subtle shadow */
   transition: none; /* Remove any hover transition effects */
+}
+
+.close-map-button {
+  background-color: #6a5acd;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 14px;
+  z-index: 1001;
+}
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .advertiser-eventing {
+    height: auto;
+    padding: 10px;
+  }
+
+  .eventing-container {
+    flex-direction: column;
+    height: auto;
+    gap: 15px;
+  }
+
+  .event-form-container {
+    padding: 15px;
+  }
+
+  .event-preview-container {
+    height: auto;
+    padding: 15px;
+  }
+
+  .event-form {
+    max-width: 100%;
+  }
+
+  .event-card {
+    width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .advertiser-eventing {
+    padding: 5px;
+  }
+
+  .eventing-container {
+    gap: 10px;
+  }
+
+  .event-form-container,
+  .event-preview-container {
+    padding: 10px;
+  }
+
+  .event-form .form-group input,
+  .event-form .form-group select,
+  .event-form .form-group textarea {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+
+  .event-card {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .publication-fee-info {
+    max-width: 100%;
+  }
 }
